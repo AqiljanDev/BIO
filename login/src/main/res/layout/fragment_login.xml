@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".ui.main.login.LoginFragment">
+
+    <TextView
+        android:id="@+id/tv_login_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:fontFamily="@font/roboto_condensed_bold"
+        android:gravity="center"
+        android:text="@string/entry"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:textSize="40sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/RoundedLinearLayoutStyle"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:backgroundTint="#F5F5F5"
+        android:paddingVertical="24dp"
+        android:paddingHorizontal="14dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_layout_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="@color/black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/text_input_edit_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="@string/email_address"
+                android:padding="16dp"
+                android:inputType="textEmailAddress"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_layout_pass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/text_input_edit_pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="@string/password"
+                android:padding="16dp"
+                android:inputType="textPassword"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tv_forgot_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
+            android:gravity="center"
+            android:text="Восстановление пароля"
+            android:textColor="#39A078" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#2C9C3C"
+            android:background="@drawable/rounded_edit_text"
+            android:padding="14dp"
+            android:text="Войти"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/tv_incorrect_format"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Неправильный формат почты"
+            android:textColor="#FF0000" />
+
+        <TextView
+            android:id="@+id/tv_become_dealer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#2C9C3C"
+            android:layout_marginTop="35dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="Стать дилером"
+            android:textColor="@color/black"
+            android:textSize="22sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_register"
+            style="@style/RoundedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Регистрация"
+            android:textColor="#68B773" />
+    </LinearLayout>
+
+</LinearLayout>

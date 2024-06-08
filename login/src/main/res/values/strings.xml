@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">BCM</string>
+    <string name="entry">Вход</string>
+    <string name="email_address">E-Mail адрес</string>
+    <string name="password">Пароль</string>
+    <string name="register">РЕГИСТРАЦИЯ</string>
+
+    <string-array name="company_type">
+        <item>ТОО</item>
+        <item>ИП</item>
+        <item>АО</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
