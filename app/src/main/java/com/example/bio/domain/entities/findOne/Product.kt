@@ -15,7 +15,7 @@ interface Product {
     val categoriesId: String
     val brandsId: String?
     val discount: String?
-    val gallery: List<String>
+    val gallery: List<GalleryItem>
     val categories: Categories
     val charactersToProducts: List<CharactersToProducts>
 }

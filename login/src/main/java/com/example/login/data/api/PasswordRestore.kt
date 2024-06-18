@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-private const val BASE_URL = "http://localhost:4040/api/auth/password/"
+private const val BASE_URL = "http://192.168.8.3/api/auth/password/"
 
 
 val retrofitPassRestore: PasswordRestore = Retrofit.Builder()

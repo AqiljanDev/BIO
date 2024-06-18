@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val repository: Repository
 ) : ViewModel() {
+    private val repository: Repository = Repository()
     private val _stateLogin: MutableStateFlow<StateSealedClass> = MutableStateFlow(value = StateSealedClass.Loading)
     val stateLogin = _stateLogin.asStateFlow()
 

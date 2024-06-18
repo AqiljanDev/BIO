@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.data.SharedPreferencesManager
 
 import com.example.login.R
 import com.example.login.data.Repository
@@ -23,7 +24,7 @@ import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {
 
-    private val viewModel: LoginViewModel by viewModels { LoginViewModelFactory() }
+    private val viewModel: LoginViewModel by viewModels()
     private val binding: FragmentLoginBinding by lazy {
         FragmentLoginBinding.inflate(layoutInflater)
     }
@@ -44,12 +45,10 @@ class LoginFragment : Fragment() {
             val email = binding.textInputEditEmail.text.toString()
             val pass = binding.textInputEditPass.text.toString()
 
-            Log.d("Mylog", "Email = $email, Pass = $pass")
             viewModel.login(LoginData(email, pass))
         }
 
         viewModel.stateLogin.onEach {
-            Log.d("Mylog", "State login onEach = IT: $it")
 
             when (it) {
                 is StateSealedClass.Loading -> {
@@ -58,33 +57,17 @@ class LoginFragment : Fragment() {
 
                 is StateSealedClass.Success -> {
 
-                    Log.d("Mylog", "Start test get()")
-                    try {
-//                        retrofitAuth.testGet("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJxbmlja3NlbEBnbWFpbC5jb20iLCJjb21wYW55IjoiQ29tcGFueSIsIm1haW5BZG1pbiI6MSwiaWF0IjoxNzE3NDc1MzYzLCJleHAiOjE3MTgwODAxNjN9.XHUTSrKydDHNPe4wmAO4B5pIl__xHCFxD7lqDTuDqgA")
+                    val sharedPreferences = SharedPreferencesManager.getInstance(requireContext())
+                    sharedPreferences.putString(SharedPreferencesManager.KEYS.TOKEN, it.token)
 
-                        findNavController().navigate(R.id.action_loginFragment_to_tempFragment)
+                    activity?.finish()
 
-                        Log.d("Mylog", "Open account")
-
-                    } catch (ex: Exception) {
-                        Log.d("Mylog", "Exception message = ${ex.message}")
-                    }
+                    Log.d("Mylog", "Open account")
                 }
 
                 is StateSealedClass.Failed -> {
                     binding.tvIncorrectFormat.visibility = View.VISIBLE
 
-                    Log.d("Mylog", "Failed class === Start test get()")
-                    try {
-                        retrofitAuth.testGet("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJxbmlja3NlbEBnbWFpbC5jb20iLCJjb21wYW55IjoiQ29tcGFueSIsIm1haW5BZG1pbiI6MSwiaWF0IjoxNzE3NDc1MzYzLCJleHAiOjE3MTgwODAxNjN9.XHUTSrKydDHNPe4wmAO4B5pIl__xHCFxD7lqDTuDqgA")
-
-                        findNavController().navigate(R.id.action_loginFragment_to_tempFragment)
-
-                        Log.d("Mylog", "Failed class === Open account")
-
-                    } catch (ex: Exception) {
-                        Log.d("Mylog", "Failed class === Exception message = ${ex.message}")
-                    }
 
                 }
             }

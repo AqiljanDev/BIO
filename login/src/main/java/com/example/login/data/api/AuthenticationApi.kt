@@ -11,7 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-private const val BASE_URL = "http://192.168.8.237:4040/api/auth/"
+private const val BASE_URL = "http://192.168.8.3:4040/api/auth/"
 
 val retrofitAuth = Retrofit.Builder()
     .baseUrl(BASE_URL)

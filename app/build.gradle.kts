@@ -2,8 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.dagger.hilt.android)
-    kotlin("kapt")
-    id("kotlin-android")
+    id("kotlin-kapt")
 }
 
 android {
@@ -44,24 +43,32 @@ android {
 
 dependencies {
 
+    implementation(project(":login"))
+    implementation(project(":data"))
+
     // Navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.3")
 
     // Retrofit2
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
     // RecyclerView
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
-    implementation("androidx.hilt:hilt-lifecycle-viewmodel:2.44")
-    kapt("androidx.hilt:hilt-compiler:2.44")
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt ("com.google.dagger:hilt-android-compiler:2.48")
+
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.14.2")
+
+    // Paging 3
+    implementation(libs.androidx.paging.runtime)
+    testImplementation(libs.androidx.paging.common)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

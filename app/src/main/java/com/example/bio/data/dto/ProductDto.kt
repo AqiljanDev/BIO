@@ -1,7 +1,5 @@
 package com.example.bio.data.dto
 
-import com.example.bio.domain.entities.findOne.Categories
-import com.example.bio.domain.entities.findOne.CharactersToProducts
 import com.example.bio.domain.entities.findOne.Product
 
 data class ProductDto (
@@ -19,7 +17,7 @@ data class ProductDto (
     override val categoriesId: String,
     override val brandsId: String?,
     override val discount: String?,
-    override val gallery: List<String>,
+    override val gallery: List<GalleryItemDto>,
     override val categories: CategoriesDto,
     override val charactersToProducts: List<CharactersToProductsDto>
 ) : Product

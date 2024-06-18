@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.data.SharedPreferencesManager
 import com.example.login.R
 import com.example.login.data.dataClass.RegisterData
 import com.example.login.databinding.FragmentRegisterBinding
@@ -20,7 +21,7 @@ import kotlinx.coroutines.flow.onEach
 
 class RegisterFragment : Fragment() {
 
-    private val viewModel: RegisterViewModel by viewModels { RegisterViewModelFactory() }
+    private val viewModel: RegisterViewModel by viewModels()
     private val binding: FragmentRegisterBinding by lazy {
         FragmentRegisterBinding.inflate(layoutInflater)
     }
@@ -65,14 +66,13 @@ class RegisterFragment : Fragment() {
                 }
 
                 is StateSealedClass.Success -> {
-                    Toast.makeText(context, "Ты прошел регистрацию", Toast.LENGTH_SHORT).show()
+                    val sharedPreferences = SharedPreferencesManager.getInstance(requireContext())
+                    sharedPreferences.putString(SharedPreferencesManager.KEYS.TOKEN, it.token)
 
                     findNavController().navigate(R.id.action_registerFragment_to_statusPendingFragment)
                 }
 
                 is StateSealedClass.Failed -> {
-
-                    Log.d("Mylog", "Failed = ${it.message}")
 
                     binding.tvIncorrectFormat.visibility = View.VISIBLE
                 }
