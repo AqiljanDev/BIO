@@ -1,8 +1,11 @@
 package com.example.bio.presentation.category
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.graphics.Color
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,23 +13,35 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import com.example.bio.R
+import com.example.bio.data.dto.CartMiniDto
 import com.example.bio.data.dto.ChildCategoryDto
+import com.example.bio.data.dto.PostCartDto
 import com.example.bio.databinding.FragmentCategoryBinding
 import com.example.bio.domain.entities.findOne.ChildCategory
 import com.example.bio.domain.entities.findOne.Info
-import com.example.bio.presentation.category.adapter.CategoryAdapter
-import com.example.bio.presentation.category.data.State
+import com.example.bio.domain.entities.findOne.Product
+import com.example.bio.presentation.MainActivity
+import com.example.bio.presentation.adapter.CategoryAdapter
+import com.example.bio.presentation.base.BaseBottomFragment
+import com.example.bio.presentation.card.ProductCardFragment
+import com.example.bio.presentation.data.Quad
+import com.example.bio.presentation.data.State
 import com.example.data.SharedPreferencesManager
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CategoryFragment : Fragment() {
+class CategoryFragment : BaseBottomFragment() {
+    private var request: String = "index"
 
     private val viewModel: CategoryViewModel by viewModels()
     private val binding: FragmentCategoryBinding by lazy {
@@ -35,9 +50,23 @@ class CategoryFragment : Fragment() {
     private val sharedPreferences by lazy {
         SharedPreferencesManager.getInstance(requireContext())
     }
+    private val token: String by lazy { sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN) }
 
     private var tagHide: Boolean = true
     private var currentSlugCategory = "Katalog"
+    private var currentPage = 1
+
+    private var listFavorite: MutableList<String> = mutableListOf()
+    private var listGroup: MutableList<String> = mutableListOf()
+
+    private lateinit var adapter: CategoryAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            request = it.getString("category") ?: "index"
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,22 +75,26 @@ class CategoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        currentSlugCategory = when {
+            request != "index" -> request
+            viewModel.saveCategory.value != "index" -> {
+                currentPage = viewModel.savePages.value
+                viewModel.saveCategory.value
+            }
+
+            else -> "index"
+        }
 
         // Запрос на Каталог(все категории)
         viewModel.getCategoryProduct(
-            sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN), "index", 1
+            token,
+            currentSlugCategory,
+            currentPage
         )
 
-        viewModel.categoryProduct.onEach {
-            addChips(it.info.childCategory)
-            initializeChips(it.info)
 
-            currentSlugCategory = it.info.slug
-            binding.tvCurrentType.text = it.info.title
-
-            binding.rcProducts.adapter = CategoryAdapter(it.products)
-
-        }.launchIn(viewLifecycleOwner.lifecycleScope)
+        setupAdapter()
+        observeViewModel()
 
         // Номермерное пагинация
         viewModel.countPages.onEach {
@@ -70,7 +103,6 @@ class CategoryFragment : Fragment() {
 
         // Отслеживание статуса для Progress bar
         viewModel.state.onEach {
-
             when (it) {
                 is State.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
@@ -78,7 +110,6 @@ class CategoryFragment : Fragment() {
 
                 is State.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    binding.paginationView.visibility = View.VISIBLE
                 }
 
                 is State.Failed -> {
@@ -87,22 +118,100 @@ class CategoryFragment : Fragment() {
                         .show()
                 }
             }
-
         }.launchIn(viewLifecycleOwner.lifecycleScope)
-
 
         // Функция для обработки клика на номерную пагинацию
         binding.paginationView.onPageSelected = { page ->
-
             viewModel.getCategoryProduct(
-                token = sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN),
+                token = token,
                 category = currentSlugCategory,
                 page = page
             )
-            binding.nestedScrollView.fling(0);  // Sets mLastScrollerY for next command
-            binding.nestedScrollView.smoothScrollTo(0, 0);  // Starts a scroll itself
+            currentPage = page
+            binding.nestedScrollView.fling(0) // Sets mLastScrollerY for next command
+            binding.nestedScrollView.smoothScrollTo(0, 0) // Starts a scroll itself
         }
+    }
 
+    private fun setupAdapter() {
+        adapter = CategoryAdapter(
+            listOf(),
+            listOf(),
+            listOf(),
+            CartMiniDto(emptyList(), 0),
+            { isState, id1c -> updateFavorite(isState, id1c) },
+            { isState, id1c -> updateGroup(isState, id1c) },
+            { prodId, count -> updateBasket(prodId, count) },
+            { id -> deleteBasket(id) }
+        ) { product ->
+            val bundle = Bundle().apply { putString("category", product.slug) }
+            (activity as MainActivity).apply {
+                replacerFragment(ProductCardFragment().apply { arguments = bundle })
+            }
+        }
+        binding.rcProducts.adapter = adapter
+    }
+
+    private fun observeViewModel() {
+        viewModel.categoryProduct.onEach { categoryProduct ->
+            addChips(categoryProduct.info.childCategory)
+            initializeChips(categoryProduct.info)
+
+            currentSlugCategory = categoryProduct.info.slug
+            binding.tvCurrentType.text = categoryProduct.info.title
+
+            updateAdapterData(categoryProduct.products)
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
+
+        combine(
+            viewModel.categoryProduct,
+            viewModel.wishListMini,
+            viewModel.compareMini,
+            viewModel.cartMini
+        ) { catalog, wishList, compareList, cart ->
+            Quad(catalog.products, wishList, compareList, cart)
+        }.onEach { (catalog, wishList, compareList, cart) ->
+            Log.d("Mylog", "Product size = ${catalog.size}")
+            if (catalog.isEmpty()) {
+                binding.paginationView.visibility = View.GONE
+                binding.tvProductsEmpty.visibility = View.VISIBLE
+            }else {
+                binding.paginationView.visibility = View.VISIBLE
+                binding.tvProductsEmpty.visibility = View.GONE
+            }
+            adapter.updateLists(catalog, wishList, compareList, cart)
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
+    }
+
+    private fun updateAdapterData(products: List<Product>) {
+        adapter.submitList(products)
+    }
+
+    private fun updateBasket(prodId: String, count: Int) {
+        viewModel.eventCart(token, PostCartDto(prodId, count))
+        (activity as MainActivity).badgeBasket.isVisible = true
+    }
+
+    private fun deleteBasket(id: Int) {
+        try {
+            Log.d("Mylog", "ID count = $id")
+            viewModel.deleteCart(token, id)
+        } catch (ex: Exception) {
+            Log.d("Mylog", "Exception === ${ex.message}")
+        }
+        (activity as MainActivity).badgeBasket.isVisible = false
+    }
+
+    private fun updateGroup(state: Boolean, id1c: String) {
+        if (state) listGroup.add(id1c) else listGroup.remove(id1c)
+        (activity as MainActivity).badgeGroup.isVisible = listGroup.isNotEmpty()
+        viewModel.eventCompare(token, id1c)
+    }
+
+    private fun updateFavorite(state: Boolean, id1c: String) {
+        if (state) listFavorite.add(id1c) else listFavorite.remove(id1c)
+        (activity as MainActivity).badgeFavorite.isVisible = listFavorite.isNotEmpty()
+        viewModel.eventWishList(token, id1c)
     }
 
     private fun initializeChips(info: Info) {
@@ -111,7 +220,7 @@ class CategoryFragment : Fragment() {
 
         addChipHistoryCategory(info.title, info.slug)
 
-        while(currentCategory != null) {
+        while (currentCategory != null) {
             addDividerText("/")
             addChipHistoryCategory(currentCategory.title, currentCategory.slug)
             currentCategory = currentCategory.parentCategory
@@ -120,11 +229,11 @@ class CategoryFragment : Fragment() {
 
     private fun clickTagCategory(slug: String) {
         viewModel.getCategoryProduct(
-            token = sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN),
+            token = token,
             category = slug,
             page = 1
         )
-
+        currentPage = 1
         binding.paginationView.resetCurrentPage()
     }
 
@@ -151,7 +260,6 @@ class CategoryFragment : Fragment() {
                 }
 
                 setOnClickListener {
-
                     if (label.slug == "raskryt" || label.slug == "skryt") {
                         tagHide = !tagHide
                         addChips(labels)
@@ -159,7 +267,6 @@ class CategoryFragment : Fragment() {
                         clickTagCategory(label.slug)
                     }
                 }
-
             }
             binding.chipGroup.addView(chip)
         }
@@ -181,7 +288,6 @@ class CategoryFragment : Fragment() {
     }
 
     private fun addChipHistoryCategory(text: String, slug: String) {
-
         val chip = Chip(context).apply {
             this.text = text
             textSize = 16f
@@ -202,10 +308,17 @@ class CategoryFragment : Fragment() {
         val textView = TextView(context).apply {
             this.text = text
             textSize = 22f
-
             gravity = Gravity.CENTER
         }
         binding.cgHistoryCatalog.addView(textView, 0)
     }
 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.d("Mylog", "On destroy slug: $currentSlugCategory")
+
+        viewModel.savesCategory(currentSlugCategory)
+        viewModel.savesPage(currentPage)
+    }
 }

@@ -12,17 +12,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="60dp"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:id="@+id/toolbar"
-            app:title="@string/app_name"
-            app:navigationIcon="@drawable/ic_hamburger_menu">
+            app:navigationIcon="@drawable/ic_hamburger_menu"
+            app:title="@string/app_name">
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -31,21 +31,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/logo_horizontal"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@id/image_view_search" />
+                    app:layout_constraintRight_toLeftOf="@id/image_view_search"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton
                     android:id="@+id/image_view_search"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_search"
-                    android:background="@null"
                     android:layout_marginEnd="20dp"
+                    android:background="@null"
+                    android:src="@drawable/ic_search"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -54,8 +54,29 @@
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/main_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
     </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            style="@style/BottomNavigationViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:itemIconTint="@drawable/selected_check"
+            app:itemTextColor="@color/orange"
+            android:layout_gravity="bottom"
+            app:menu="@menu/bottom_navigation"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
@@ -64,10 +85,22 @@
         android:layout_gravity="start"
         app:itemIconTint="@color/green"
         app:itemTextColor="@color/black"
-        app:menu="@menu/toolbar_menu" />
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/left_menu" >
 
-    <include
-        android:id="@+id/bottom_navigation"
-        layout="@layout/main_button_nav" />
+        <TextView
+            android:id="@+id/tv_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Выход"
+            android:layout_gravity="bottom"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginVertical="26dp"
+            android:layout_marginHorizontal="35dp"
+            android:drawablePadding="10dp"
+            app:drawableStartCompat="@drawable/ic_logout" />
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -10,4 +10,7 @@
     <color name="red">#EF2719</color>
     <color name="chip_background">#E1E8EF</color>
     <color name="chip_background_line">#858585</color>
+    <color name="background_button_clear">#BFBFBF</color>
+    <color name="white_standart">#E1E8EF</color>
+    <color name="white_standart_active">#CBD7E0</color>
 </resources>

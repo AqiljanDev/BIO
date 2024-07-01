@@ -45,6 +45,7 @@ dependencies {
 
     implementation(project(":login"))
     implementation(project(":data"))
+    implementation(project(":core"))
 
     // Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.3")
@@ -64,11 +65,14 @@ dependencies {
     kapt ("com.google.dagger:hilt-android-compiler:2.48")
 
     // Glide
-    implementation("com.github.bumptech.glide:glide:4.14.2")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     // Paging 3
     implementation(libs.androidx.paging.runtime)
     testImplementation(libs.androidx.paging.common)
+
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
+    implementation("com.tbuonomo:dotsindicator:5.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

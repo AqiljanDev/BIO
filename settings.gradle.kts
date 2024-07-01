@@ -25,3 +25,4 @@ rootProject.name = "BIO"
 include(":app")
 include(":login")
 include(":data")
+include(":core")

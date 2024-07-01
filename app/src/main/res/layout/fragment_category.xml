@@ -11,6 +11,16 @@
         android:layout_height="80dp"
         android:layout_gravity="center" />
 
+    <TextView
+        android:id="@+id/tv_products_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/product_empty"
+        android:textSize="22sp"
+        android:fontFamily="@font/roboto_condensed_medium"
+        android:visibility="gone"
+        android:layout_gravity="center" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
@@ -64,6 +74,7 @@
             android:layout_height="wrap_content"
             app:chipSpacingHorizontal="4dp"
             app:chipSpacingVertical="4dp"
+            android:layout_marginBottom="20dp"
             app:singleLine="false"
             app:singleSelection="false" />
 
@@ -76,13 +87,13 @@
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        <com.example.bio.presentation.category.adapter.PaginationView
+        <com.example.bio.presentation.adapter.PaginationView
             android:id="@+id/paginationView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:layout_marginBottom="70dp"
-            android:visibility="invisible"/>
+            android:visibility="gone"/>
 
     </LinearLayout>
 

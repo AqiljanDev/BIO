@@ -1,13 +1,16 @@
 package com.example.bio.data.api
 
+import com.example.bio.data.dto.CatalogDto
 import com.example.bio.data.dto.ProductDto
+import com.example.bio.data.dto.collectCharacters.CollectCharactersDto
+import com.example.core.UrlConstants.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path
+import retrofit2.http.Query
 
-private const val BASE_URL = "http://192.168.8.3:4040/api/"
 
 val retrofitSearchAndFilter: SearchAndFilterService by lazy {
     Retrofit.Builder()
@@ -17,13 +20,35 @@ val retrofitSearchAndFilter: SearchAndFilterService by lazy {
         .create(SearchAndFilterService::class.java)
 }
 
-
 interface SearchAndFilterService {
 
-    @GET("search?s={message}")
-    fun search(
+    @GET("search")
+    suspend fun search(
         @Header("Authorization") token: String,
-        @Path("message") message: String
+        @Query("s") message: String
     ): List<ProductDto>
+
+    @GET("catalog/")
+    suspend fun findOne(
+        @Header("Authorization") token: String,
+        @Query("min") min: Int? = null,
+        @Query("max") max: Int? = null,
+        @Query("sort") sort: String,
+        @Query("f") chars: String,
+        @Query("page") page: Int
+    ): CatalogDto
+
+    @GET("char/{category}")
+    suspend fun collectCharacters(
+        @Header("Authorization") token: String,
+        @Path("category") category: String,
+        @Query("f") chars: String
+    ): CollectCharactersDto
+
+    @GET("catalog/brand/char/{category}")
+    suspend fun collectCharactersBrand(
+        @Header("Authorization") token: String,
+        @Path("category") category: String
+    ): CollectCharactersDto
 
 }

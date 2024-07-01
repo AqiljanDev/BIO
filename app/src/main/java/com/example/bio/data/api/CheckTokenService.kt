@@ -1,12 +1,11 @@
 package com.example.bio.data.api
 
+import com.example.core.UrlConstants.BASE_URL
 import com.google.gson.annotations.SerializedName
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Header
-
-private const val BASE_URL: String = "http://192.168.8.3:4040/api/auth/"
 
 val retrofitCheckToken: CheckTokenService by lazy {
     Retrofit.Builder()
@@ -18,7 +17,7 @@ val retrofitCheckToken: CheckTokenService by lazy {
 
 interface CheckTokenService {
 
-    @GET("check")
+    @GET("auth/check")
     suspend fun testGet(
         @Header("Authorization") token: String
     )

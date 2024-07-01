@@ -8,6 +8,10 @@
         android:title="Сравнение"
         android:icon="@drawable/ic_bottom_navigation_group" />
 
+    <item android:id="@+id/favorite"
+        android:title="Избранное"
+        android:icon="@drawable/ic_bottom_navigation_heart" />
+
     <item android:id="@+id/basket"
         android:title="Корзина"
         android:icon="@drawable/ic_bottom_navigation_basket" />

@@ -1,5 +1,6 @@
 package com.example.login.data.api
 
+import com.example.core.UrlConstants.BASE_URL
 import com.example.login.data.dataClass.LoginData
 import com.example.login.data.dataClass.RegisterData
 import com.example.login.data.dataClass.returnData.AuthReturnClass
@@ -11,8 +12,6 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-private const val BASE_URL = "http://192.168.8.3:4040/api/auth/"
-
 val retrofitAuth = Retrofit.Builder()
     .baseUrl(BASE_URL)
     .addConverterFactory(GsonConverterFactory.create())
@@ -21,13 +20,13 @@ val retrofitAuth = Retrofit.Builder()
 
 interface AuthenticationApi {
 
-    @POST("login")
+    @POST("auth/login")
     suspend fun login(@Body loginData: LoginData): AuthReturnClass
 
-    @POST("registration")
+    @POST("auth/registration")
     suspend fun registration(@Body registerData: RegisterData): AuthReturnClass
 
-    @GET("check")
+    @GET("auth/check")
     suspend fun testGet(
         @Header("Authorization") token: String
     )

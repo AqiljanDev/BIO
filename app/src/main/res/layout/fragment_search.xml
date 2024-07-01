@@ -3,26 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".presentation.search.SearchFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingHorizontal="10dp"
-        android:paddingTop="16dp" >
+        android:paddingTop="12dp" >
 
-        <EditText
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/edit_text_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="9.6"
-            android:background="@android:drawable/editbox_background"
-            android:hint="Поиск товара"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:minHeight="48dp"
-            android:padding="8dp" />
+            android:background="@drawable/rounded_edit_text"
+            android:iconifiedByDefault="false"
+            android:queryHint="@string/search_hint"
+            android:inputType="text"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_cancel"
@@ -42,6 +42,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_search_products"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_marginHorizontal="7dp"
+        android:layout_marginVertical="5dp"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

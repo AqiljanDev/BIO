@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 class SharedPreferencesManager private constructor(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val editor = sharedPreferences.edit()
 
     companion object {
         private const val PREFS_NAME = "shared_prefs"
@@ -19,7 +20,11 @@ class SharedPreferencesManager private constructor(context: Context) {
 
     // Example methods to put/get data
     fun putString(key: KEYS, value: String) {
-        sharedPreferences.edit().putString(key.message, value).apply()
+        editor.putString(key.message, value).apply()
+    }
+
+    fun removeString(key: KEYS) {
+        editor.remove(key.message).apply()
     }
 
     fun getString(key: KEYS): String {

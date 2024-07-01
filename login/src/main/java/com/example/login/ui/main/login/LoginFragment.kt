@@ -45,6 +45,8 @@ class LoginFragment : Fragment() {
             val email = binding.textInputEditEmail.text.toString()
             val pass = binding.textInputEditPass.text.toString()
 
+            Log.d("Mylog", "Email: $email, Pass: $pass")
+
             viewModel.login(LoginData(email, pass))
         }
 

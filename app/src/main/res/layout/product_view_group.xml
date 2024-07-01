@@ -27,26 +27,27 @@
         android:text="32%"
         android:textColor="@color/white"
         android:textSize="17sp"
+        android:fontFamily="@font/roboto_condensed_medium"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginBottom="40dp"
         android:layout_marginStart="10dp"
+        android:layout_marginBottom="40dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@id/ll_prices"
         app:layout_constraintLeft_toRightOf="@id/image_view_main"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btn_basket">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_medium"
-            android:singleLine="false"
             android:maxLines="5"
+            android:singleLine="false"
             android:text="Title"
             android:textColor="@color/black"
             android:textSize="14sp" />
@@ -89,9 +90,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
+                    android:fontFamily="@font/inter_light"
                     android:maxLines="1"
                     android:text="БРЕНД: ABAC"
-                    android:fontFamily="@font/inter_light"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -116,9 +117,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
+                    android:fontFamily="@font/inter_light"
                     android:maxLines="1"
                     android:text="Модель: HOCKENHEIM OS20P"
-                    android:fontFamily="@font/inter_light"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -143,9 +144,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
+                    android:fontFamily="@font/inter_light"
                     android:maxLines="1"
                     android:text="Объем ресивера: 20л"
-                    android:fontFamily="@font/inter_light"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -156,10 +157,10 @@
         android:id="@+id/img_btn_like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@null"
-        android:src="@drawable/heart_passive"
         android:layout_marginVertical="10dp"
         android:layout_marginStart="20dp"
+        android:background="@null"
+        android:src="@drawable/heart_passive"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
 
@@ -174,31 +175,95 @@
         app:layout_constraintLeft_toRightOf="@id/img_btn_like"
         app:layout_constraintTop_toTopOf="@id/img_btn_like" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_basket"
+    <FrameLayout
+        android:id="@+id/frame_layout_basket"
         android:layout_width="wrap_content"
-        android:layout_height="41dp"
-        android:background="@drawable/button_background"
-        android:drawableStart="@drawable/baseline_shopping_cart_24"
-        android:drawablePadding="8dp"
-        android:text="В корзину"
-        android:textColor="@android:color/white"
-        android:paddingHorizontal="8dp"
-        android:textSize="13sp"
-        android:textAllCaps="false"
-        android:fontFamily="@font/inter_medium"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent">
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_basket"
+            android:layout_width="wrap_content"
+            android:layout_height="41dp"
+            android:background="@drawable/button_background"
+            android:drawableStart="@drawable/baseline_shopping_cart_24"
+            android:drawablePadding="8dp"
+            android:fontFamily="@font/inter_medium"
+            android:paddingHorizontal="8dp"
+            android:text="В корзину"
+            android:textAllCaps="false"
+            android:visibility="gone"
+            android:textColor="@android:color/white"
+            android:textSize="13sp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cons_layout_basket_active"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_count_products"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:text="Наличие: 500 шт"
+                android:textColor="@color/chip_background_line"
+                android:textSize="13sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btn_minus"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/button_background"
+                android:gravity="center"
+                android:src="@drawable/baseline_minimize_24"
+                android:textSize="30sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_count_products" />
+
+            <TextView
+                android:id="@+id/tv_count_my"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5"
+                app:layout_constraintBottom_toBottomOf="@id/btn_minus"
+                app:layout_constraintLeft_toRightOf="@id/btn_minus"
+                app:layout_constraintRight_toLeftOf="@id/btn_plus"
+                app:layout_constraintTop_toTopOf="@id/btn_minus" />
+
+
+            <ImageButton
+                android:id="@+id/btn_plus"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/button_background"
+                android:gravity="center"
+                android:src="@drawable/baseline_add_24"
+                android:textSize="30sp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_count_products" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+
 
     <LinearLayout
+        android:id="@+id/ll_prices"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="14dp"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@id/btn_basket"
-        app:layout_constraintRight_toLeftOf="@id/btn_basket"
-        app:layout_constraintTop_toTopOf="@id/btn_basket">
+        app:layout_constraintBottom_toBottomOf="@id/frame_layout_basket"
+        app:layout_constraintRight_toLeftOf="@id/frame_layout_basket"
+        app:layout_constraintTop_toTopOf="@id/frame_layout_basket">
 
         <TextView
             android:id="@+id/tv_price"

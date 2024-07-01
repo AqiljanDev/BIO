@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="15dp"
+    tools:context=".presentation.left_menu.ContactsFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:fontFamily="@font/roboto_condensed"
+        android:gravity="center"
+        android:text="КОНТАКТЫ"
+        android:textColor="@color/black"
+        android:textSize="28sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:fontFamily="@font/roboto_condensed_regular"
+        android:drawablePadding="10dp"
+        android:text="Phone: +7 777 777 7777"
+        android:textColor="@color/black"
+        android:textSize="17sp"
+        app:drawableStartCompat="@drawable/ic_phone" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto_condensed_regular"
+        android:drawablePadding="10dp"
+        android:text="Email: test@netlight.com"
+        android:textSize="17sp"
+        app:drawableStartCompat="@drawable/ic_email" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_condensed_regular"
+        android:layout_marginTop="8dp"
+        android:drawablePadding="10dp"
+        android:text="Адрес: Алматы.район.здание"
+        android:textSize="17sp"
+        app:drawableStartCompat="@drawable/ic_location" />
+
+</LinearLayout>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/tv_procent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_procent_background"
+        android:paddingHorizontal="6dp"
+        android:paddingVertical="3dp"
+        android:text="32%"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:fontFamily="@font/roboto_condensed_medium"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/image_view_photo"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/camera_slash"
+        android:layout_marginTop="25dp"
+        android:layout_marginStart="15dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <ImageView
+        android:id="@+id/image_view_garbage"
+        android:layout_width="22dp"
+        android:layout_height="41dp"
+        android:src="@drawable/ic_garbage"
+        android:layout_marginTop="18dp"
+        app:layout_constraintTop_toBottomOf="@+id/image_view_photo"
+        app:layout_constraintLeft_toLeftOf="@id/image_view_photo"
+        app:layout_constraintRight_toRightOf="@id/image_view_photo" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="18dp"
+        android:fontFamily="@font/roboto_condensed_regular"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/image_view_photo" />
+
+    <TextView
+        android:id="@+id/tv_price_of_one"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="157 9.5 ₸"
+        android:textSize="13sp"
+        android:layout_marginStart="18dp"
+        android:fontFamily="@font/inter_medium"
+        android:textColor="@color/chip_background_line"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintLeft_toRightOf="@id/image_view_photo" />
+
+    <LinearLayout
+        android:id="@+id/ll_prices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/image_view_garbage"
+        app:layout_constraintBottom_toBottomOf="@id/image_view_garbage">
+
+        <TextView
+            android:id="@+id/tv_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_condensed_bold"
+            android:text="263 250 ₸"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tv_price_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_condensed_regular"
+            android:text="585 000 ₸"
+            android:textColor="#FF9200"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/cons_layout_basket_active"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginEnd="15dp"
+        app:layout_constraintRight_toLeftOf="@id/ll_prices"
+        app:layout_constraintTop_toTopOf="@id/image_view_garbage"
+        app:layout_constraintBottom_toBottomOf="@id/image_view_garbage" >
+
+        <TextView
+            android:id="@+id/tv_count_max"
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="6dp"
+            android:gravity="center"
+            android:fontFamily="@font/inter_medium"
+            android:textColor="@color/chip_background_line"
+            android:textSize="12sp"
+            android:text="Наличие: 1шт" />
+
+        <ImageButton
+            android:id="@+id/btn_minus"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button_background"
+            android:gravity="center"
+            android:src="@drawable/baseline_minimize_24"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/tv_count_my"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="110"
+            android:textSize="15sp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_gravity="center"/>
+
+        <ImageButton
+            android:id="@+id/btn_plus"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button_background"
+            android:gravity="center"
+            android:src="@drawable/baseline_add_24"
+            android:textSize="25sp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
