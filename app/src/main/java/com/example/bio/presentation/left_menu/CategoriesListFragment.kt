@@ -13,6 +13,7 @@ import com.example.bio.databinding.FragmentCategoriesListBinding
 import com.example.bio.presentation.MainActivity
 import com.example.bio.presentation.adapter.CategoriesAdapter
 import com.example.bio.presentation.category.CategoryFragment
+import com.example.bio.presentation.filter.FilterFragment
 import com.example.data.SharedPreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class CategoriesListFragment : Fragment() {
+    private var filter = false
 
     private val viewModel: CategoriesListViewModel by viewModels()
     private val binding: FragmentCategoriesListBinding by lazy {
@@ -28,6 +30,14 @@ class CategoriesListFragment : Fragment() {
 
     private val sharedPreferences by lazy {
         SharedPreferencesManager.getInstance(requireContext())
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let {
+            filter = it.getBoolean("filter", false)
+        }
     }
 
     override fun onCreateView(
@@ -39,7 +49,7 @@ class CategoriesListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val adapter = CategoriesAdapter(
             list = listOf(),
-            clickRoot = { slug -> clickRoot(slug) }
+            clickRoot = { slug -> clickRoot(slug) },
         )
         binding.rcCategories.adapter = adapter
 
@@ -58,9 +68,11 @@ class CategoriesListFragment : Fragment() {
     }
 
     private fun clickRoot(slug: String) {
-        Log.d("Mylog", "Click root fragment= $slug")
+        Log.d("Mylog", "Click root fragment= $slug, $filter")
+        val screen: Fragment = if (filter) FilterFragment() else CategoryFragment()
+
         val bundle = Bundle().apply { putString("category", slug) }
-        (activity as MainActivity).replacerFragment(CategoryFragment().apply {
+        (activity as MainActivity).replacerFragment(screen.apply {
             arguments = bundle
         })
     }

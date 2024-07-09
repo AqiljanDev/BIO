@@ -40,10 +40,6 @@ class CategoriesAdapter(
             tvCategory.text = category.title
 
             root.setOnClickListener {
-                Log.d(
-                    "Mylog",
-                    "list = ${category.childCategory}, is empty = ${category.childCategory.isNotEmpty()}, all if = ${category.childCategory.isNotEmpty() != null}"
-                )
                 if (category.childCategory.isNotEmpty()) {
                     Log.d("Mylog", "Update list ---- true = ${category.childCategory}")
                     parentSlug = category.slug

@@ -39,4 +39,16 @@ class RepositoryImpl @Inject constructor(
         return catalogDataSource.getCategoriesFinAll(token)
     }
 
+    override suspend fun getCatalogFilter(
+        token: String,
+        category: String,
+        min: Int?,
+        max: Int?,
+        sort: String,
+        chars: String,
+        page: Int
+    ): Catalog {
+        return filterDataSource.getFindOneFilter(token, category, min, max, sort, chars, page)
+    }
+
 }

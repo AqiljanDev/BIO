@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+<!--    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">-->
+<!--        &lt;!&ndash; Customize your theme here &ndash;&gt;-->
+<!--        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>-->
+<!--    </style>-->
+
+<!--    &lt;!&ndash; Style for BottomSheetDialogFragment with rounded corners &ndash;&gt;-->
+<!--    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">-->
+<!--        <item name="bottomSheetStyle">@style/BottomSheetRoundedStyle</item>-->
+<!--    </style>-->
+
+<!--    <style name="BottomSheetRoundedStyle" parent="Widget.Design.BottomSheet.Modal">-->
+<!--        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.BottomSheetDialog</item>-->
+<!--    </style>-->
+
+<!--    <style name="ShapeAppearance.BottomSheetDialog" parent="ShapeAppearance.MaterialComponents.SmallComponent">-->
+<!--        <item name="cornerFamily">rounded</item>-->
+<!--        <item name="cornerSizeTopLeft">18dp</item>-->
+<!--        <item name="cornerSizeTopRight">18dp</item>-->
+<!--    </style>-->
+
+
     <style name="BottomNavigationViewTextAppearance" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">@dimen/bottom_navigation_text_size</item>
         <item name="android:paddingTop">0dp</item>

@@ -2,19 +2,23 @@ package com.example.bio.presentation
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.example.bio.R
 import com.example.bio.databinding.ActivityMainBinding
-import com.example.bio.extension.defaultCustom
+import com.example.bio.utils.defaultCustom
 import com.example.bio.presentation.basket.BasketFragment
 import com.example.bio.presentation.category.CategoryFragment
 import com.example.bio.presentation.compare.CompareFragment
@@ -42,9 +46,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val badgeFavorite by lazy { binding.bottomNavigation.getOrCreateBadge(R.id.favorite) }
     val badgeBasket by lazy { binding.bottomNavigation.getOrCreateBadge(R.id.basket) }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        enableEdgeToEdge()
 
         setSupportActionBar(binding.toolbar)
         binding.navView.setNavigationItemSelectedListener(this)
@@ -139,21 +145,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    fun hideBottomNavigation() {
-        val slideOutAnimation: Animation =
-            AnimationUtils.loadAnimation(this, R.anim.slide_out_bottom_navigation)
-        binding.bottomNavigation.startAnimation(slideOutAnimation)
-        binding.bottomNavigation.visibility =
-            View.GONE // скрыть BottomNavigation после завершения анимации
-    }
-
-    fun showBottomNavigation() {
-        val slideInAnimation =
-            AnimationUtils.loadAnimation(this, R.anim.slide_in_bottom_navigation)
-        binding.bottomNavigation.startAnimation(slideInAnimation)
-        binding.bottomNavigation.visibility =
-            View.VISIBLE // показать BottomNavigation после завершения анимации
-    }
 
     override fun onDestroy() {
         super.onDestroy()

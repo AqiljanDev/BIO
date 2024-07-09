@@ -30,6 +30,7 @@ import com.example.bio.presentation.base.BaseBottomFragment
 import com.example.bio.presentation.card.ProductCardFragment
 import com.example.bio.presentation.data.Quad
 import com.example.bio.presentation.data.State
+import com.example.bio.presentation.filter.FilterFragment
 import com.example.data.SharedPreferencesManager
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
@@ -117,6 +118,7 @@ class CategoryFragment : BaseBottomFragment() {
                     Snackbar.make(binding.root, "Ошибка: ${it.message}", Snackbar.LENGTH_LONG)
                         .show()
                 }
+
             }
         }.launchIn(viewLifecycleOwner.lifecycleScope)
 
@@ -130,6 +132,13 @@ class CategoryFragment : BaseBottomFragment() {
             currentPage = page
             binding.nestedScrollView.fling(0) // Sets mLastScrollerY for next command
             binding.nestedScrollView.smoothScrollTo(0, 0) // Starts a scroll itself
+        }
+
+        binding.btnFilter.setOnClickListener {
+            val bundle = Bundle().apply { putString("category", currentSlugCategory) }
+            (activity as MainActivity).replacerFragment(
+                FilterFragment().apply { arguments = bundle }
+            )
         }
     }
 

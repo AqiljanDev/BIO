@@ -1,5 +1,5 @@
 package com.example.core
 
 object UrlConstants {
-    const val BASE_URL = "http://89.46.33.116:4040/api/"
+    const val BASE_URL = "http://192.168.8.34:4040/api/"
 }

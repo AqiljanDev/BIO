@@ -263,7 +263,9 @@ class ProductCardFragment : Fragment() {
             tvCount.text = "${product.count} штук"
         }
 
-        initializeSlider(product.gallery)
+        if (product.gallery.isNotEmpty()) {
+            initializeSlider(product.gallery)
+        }
 
         tvBrand.text = product.categories.title
         tvDesc.text = product.desc
@@ -302,6 +304,7 @@ class ProductCardFragment : Fragment() {
 
     private fun initializeSlider(productImages: List<GalleryItem>) {
         dots = arrayOfNulls(productImages.size)
+        Log.d("Mylog", "Initialize slider open")
 
         for (i in productImages.indices) {
             val imageView = ImageView(context)

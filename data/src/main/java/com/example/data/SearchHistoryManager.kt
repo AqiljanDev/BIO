@@ -4,29 +4,25 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class SearchHistoryManager(context: Context) {
-    private val preferences = context.getSharedPreferences("search_history_prefs", Context.MODE_PRIVATE)
-    private val KEY_SEARCH_HISTORY = "search_history"
+    private val sharedPreferences = context.getSharedPreferences("search_history_prefs", Context.MODE_PRIVATE)
 
-    fun getSearchHistory(): List<String> {
-        return preferences.getStringSet(KEY_SEARCH_HISTORY, emptySet())?.toList() ?: emptyList()
+    fun saveQuery(query: String) {
+        val history = getHistory().toMutableList()
+        if (query in history) {
+            history.remove(query)
+        }
+        history.add(0, query)
+        sharedPreferences.edit().putStringSet("search_history", history.toSet()).apply()
     }
 
-    fun saveSearchQuery(query: String) {
-        val queries = getSearchHistory().toMutableList()
-        if (!queries.contains(query)) {
-            queries.add(query)
-            saveSearchQueries(queries)
-        }
+    fun getHistory(): List<String> {
+        return sharedPreferences.getStringSet("search_history", emptySet())?.toList() ?: emptyList()
     }
 
     fun clearHistory() {
-        preferences.edit().remove(KEY_SEARCH_HISTORY).apply()
-    }
-
-    private fun saveSearchQueries(queries: List<String>) {
-        val editor = preferences.edit()
-        editor.putStringSet(KEY_SEARCH_HISTORY, queries.toSet())
-        editor.apply()
+        sharedPreferences.edit().remove("search_history").apply()
     }
 }
+
+
 

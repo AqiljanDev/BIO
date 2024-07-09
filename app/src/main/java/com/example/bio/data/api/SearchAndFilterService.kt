@@ -28,9 +28,10 @@ interface SearchAndFilterService {
         @Query("s") message: String
     ): List<ProductDto>
 
-    @GET("catalog/")
+    @GET("catalog/{category}")
     suspend fun findOne(
         @Header("Authorization") token: String,
+        @Path("category") category: String,
         @Query("min") min: Int? = null,
         @Query("max") max: Int? = null,
         @Query("sort") sort: String,

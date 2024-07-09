@@ -4,6 +4,7 @@ import com.example.bio.domain.repository.Repository
 import com.example.bio.domain.repository.RepositoryCondition
 import com.example.bio.domain.useCase.DeleteCartUseCase
 import com.example.bio.domain.useCase.GetCartFullUseCase
+import com.example.bio.domain.useCase.GetCatalogFilterUseCase
 import com.example.bio.domain.useCase.GetCatalogUseCase
 import com.example.bio.domain.useCase.GetCategoriesListUseCase
 import com.example.bio.domain.useCase.GetCollectCharactersUseCase
@@ -75,6 +76,11 @@ class DomainModule {
     @Provides
     fun provideGetCartFullUseCase(repositoryCondition: RepositoryCondition): GetCartFullUseCase {
         return GetCartFullUseCase(repositoryCondition)
+    }
+
+    @Provides
+    fun provideGetCatalogFilterUseCase(repository: Repository): GetCatalogFilterUseCase {
+        return GetCatalogFilterUseCase(repository)
     }
 
 }

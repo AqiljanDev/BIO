@@ -11,18 +11,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingHorizontal="10dp"
-        android:paddingTop="12dp" >
+        android:padding="10dp">
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/edit_text_search"
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="9.6"
-            android:background="@drawable/rounded_edit_text"
-            android:iconifiedByDefault="false"
-            android:queryHint="@string/search_hint"
-            android:inputType="text"/>
+            android:layout_gravity="center_vertical">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/edit_text_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:clickable="true"
+                android:background="@drawable/rounded_edit_text"
+                android:iconifiedByDefault="false"
+                android:queryHint="@string/search_hint"
+                android:inputType="text"/>
+        </FrameLayout>
+
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_cancel"
@@ -34,6 +42,44 @@
             android:textSize="15sp"
             android:textColor="@color/red" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="7dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.9"
+            android:text="История поиска"
+            android:textSize="12sp"
+            android:textAllCaps="true"
+            android:textColor="@color/chip_background_line"/>
+
+        <TextView
+            android:id="@+id/tv_clear_history"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:fontFamily="@font/roboto_condensed_medium"
+            android:gravity="center"
+            android:text="Очистить"
+            android:textSize="14sp"
+            android:textAllCaps="true"
+            android:textColor="#00869E" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rc_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical" />
 
     <View
         android:layout_width="match_parent"

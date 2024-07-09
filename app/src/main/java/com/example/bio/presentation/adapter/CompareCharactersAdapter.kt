@@ -8,49 +8,58 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bio.R
 import com.example.bio.databinding.CompareCharactersItemBinding
+import com.example.bio.databinding.VerticalListBinding
 import com.example.bio.domain.entities.cart.CartFullProduct
 import com.example.bio.domain.entities.compare.CharactersToCompare
+import com.example.bio.presentation.data.CustomCompare
 
 class CompareCharactersAdapter(
-    private val list: List<String>
-) : RecyclerView.Adapter<CompareCharactersAdapter.CompareCharacterItemViewHolder>() {
+    private var list: List<String>
+) : ListAdapter<CustomCompare, CompareCharactersAdapter.VerticalListItemViewHolder>(
+    CompareCharacterDiffCallback()
+) {
 
-    inner class CompareCharacterItemViewHolder(
-        private val binding: CompareCharactersItemBinding
+    inner class VerticalListItemViewHolder(
+        private val binding: VerticalListBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(char: String, position: Int) {
-            binding.tvTitle.text = char
-
-            binding.tvTitle.setBackgroundResource(
-                if (position % 2 == 0) {
-                    R.drawable.background_characters_active
-                } else R.drawable.backgroud_characters_passive
-            )
+        fun bind(char: CustomCompare) {
+            Log.d("Mylog", "Vertical item = ${char.title}")
+            binding.rcCharactersCard.adapter = CompareCharactersCardAdapter(list, char.characters)
         }
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): CompareCharacterItemViewHolder {
-        val binding = CompareCharactersItemBinding.inflate(
+    ): VerticalListItemViewHolder {
+        val binding = VerticalListBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         )
 
-        return CompareCharacterItemViewHolder(binding)
+        return VerticalListItemViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: CompareCharacterItemViewHolder, position: Int) {
-        val data = list[position]
-        holder.bind(data, position)
+    override fun onBindViewHolder(holder: VerticalListItemViewHolder, position: Int) {
+        val data = getItem(position)
+        holder.bind(data)
     }
 
-    override fun getItemCount(): Int {
-        Log.d("Mylog", "Item size : ${list.size} = $list")
-        return list.size
+    fun updateList(listCharacters: List<String>, listCustomCompare: List<CustomCompare>) {
+        list = listCharacters
+        submitList(listCustomCompare)
     }
-
 }
+
+private class CompareCharacterDiffCallback : DiffUtil.ItemCallback<CustomCompare>() {
+    override fun areItemsTheSame(oldItem: CustomCompare, newItem: CustomCompare): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: CustomCompare, newItem: CustomCompare): Boolean {
+        return oldItem == newItem
+    }
+}
+

@@ -8,5 +8,5 @@ data class CustomCompare(
     val photo: String? = null,
     val count: Int = 0,
     val price: Int = 0,
-    val characters: List< String>
+    val characters: List<String>
 )

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
+    <color name="black_medium">#2B2B2B</color>
     <color name="white">#FFFFFFFF</color>
     <color name="button_default_color">#4CAF50</color> <!-- Green color -->
     <color name="button_pressed_color">#2C9C3C</color>
     <color name="orange">#EF9B3F</color>
+    <color name="orange_bold">#FF7D00</color>
     <color name="green">#2C9C3C</color> <!-- Darker green color for pressed state -->
     <color name="colorPrimary">#4CAF50</color>
     <color name="red">#EF2719</color>
@@ -13,4 +15,7 @@
     <color name="background_button_clear">#BFBFBF</color>
     <color name="white_standart">#E1E8EF</color>
     <color name="white_standart_active">#CBD7E0</color>
+    <color name="blue">#009BB6</color>
+    <color name="grey">#1F1F1F</color>
+    <color name="small_text_color">#5B646A</color>
 </resources>

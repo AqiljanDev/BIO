@@ -1,41 +1,32 @@
 package com.example.bio.presentation.search
 
-import android.app.SearchManager
-import android.content.Intent
-import android.database.Cursor
-import android.database.MatrixCursor
-import androidx.fragment.app.viewModels
 import android.os.Bundle
-import android.provider.BaseColumns
-import android.provider.SearchRecentSuggestions
 import android.util.Log
-import android.view.KeyEvent
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.bio.data.dto.CartMiniDto
 import com.example.bio.data.dto.PostCartDto
 import com.example.bio.databinding.FragmentSearchBinding
 import com.example.bio.domain.entities.findOne.Product
 import com.example.bio.presentation.MainActivity
-import com.example.bio.presentation.category.CategoryFragment
 import com.example.bio.presentation.adapter.CategoryAdapter
+import com.example.bio.presentation.adapter.SearchHistoryAdapter
 import com.example.bio.presentation.card.ProductCardFragment
+import com.example.bio.presentation.category.CategoryFragment
 import com.example.bio.presentation.data.Quad
 import com.example.bio.presentation.filter.FilterFragment
+import com.example.data.SearchHistoryManager
 import com.example.data.SharedPreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import androidx.cursoradapter.widget.SimpleCursorAdapter
-import com.example.bio.R
-import com.example.data.SearchHistoryManager
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
@@ -49,13 +40,10 @@ class SearchFragment : Fragment() {
     }
     private val token: String by lazy { sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN) }
 
-    private var request = ""
-    private val searchHistoryManager: SearchHistoryManager by lazy {
-        SearchHistoryManager(requireContext())
-    }
+    private lateinit var searchHistoryManager: SearchHistoryManager
+    private lateinit var adapterSearchHistory: SearchHistoryAdapter
 
     private lateinit var adapter: CategoryAdapter
-    private lateinit var suggestionAdapter: SimpleCursorAdapter
 
     private var listFavorite: MutableList<String> = mutableListOf()
     private var listGroup: MutableList<String> = mutableListOf()
@@ -71,74 +59,48 @@ class SearchFragment : Fragment() {
 
         setupAdapter()
         observeViewModel()
-        setupSearchView()
 
-        binding.btnCancel.setOnClickListener {
-            (activity as MainActivity).replacerFragment(CategoryFragment())
+
+        searchHistoryManager = SearchHistoryManager(requireContext())
+        if (searchHistoryManager.getHistory().isEmpty()) {
+            binding.llHistory.visibility = View.GONE
+            binding.rcHistory.visibility = View.GONE
         }
-    }
 
-    private fun setupSearchView() {
-        // Установите `CursorAdapter` для `SearchView`
-        val columns = arrayOf(SearchManager.SUGGEST_COLUMN_TEXT_1)
-        val suggestionCursor = getSearchSuggestionCursor()
+        adapterSearchHistory = SearchHistoryAdapter(searchHistoryManager.getHistory()) { query ->
+            binding.editTextSearch.setQuery(query, false)
+            performSearch(query)
+        }
 
-        suggestionAdapter = SimpleCursorAdapter(
-            requireContext(),
-            R.layout.item_search_history,  // Используем кастомный макет
-            suggestionCursor,
-            columns,
-            intArrayOf(R.id.search_history_text), // Указываем ID для TextView
-            0
-        )
+        binding.rcHistory.adapter = adapterSearchHistory
 
-        val searchView = binding.editTextSearch
-        searchView.suggestionsAdapter = suggestionAdapter
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding.editTextSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
-                    searchHistoryManager.saveSearchQuery(it)
-                    displaySearchResults(it)
-                    showSearchHistory()  // Обновите историю после поиска
-                    Log.d("Mylog", "On query text submit = $it")
+                    performSearch(query)
                 }
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText.isNullOrEmpty()) {
-                    showSearchHistory()
+                    updateHistory()
+                } else {
+                    viewModel.getSearchResults(token, newText)
+                    updateHistory()
                 }
                 return true
             }
         })
 
-        // Убедитесь, что вы отображаете историю поиска при открытии SearchView
-        searchView.setOnSearchClickListener {
-            showSearchHistory()
-        }
-    }
-
-    private fun getSearchSuggestionCursor(): Cursor {
-        val recentSearches = searchHistoryManager.getSearchHistory()
-        val matrixCursor = MatrixCursor(arrayOf(BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1))
-
-        for ((index, query) in recentSearches.withIndex()) {
-            matrixCursor.addRow(arrayOf(index, query))
+        binding.tvClearHistory.setOnClickListener {
+            searchHistoryManager.clearHistory()
+            updateHistory()
         }
 
-        return matrixCursor
-    }
-
-    private fun displaySearchResults(query: String) {
-        // Логика для отображения результатов поиска
-    }
-
-    private fun showSearchHistory() {
-        val suggestionCursor = getSearchSuggestionCursor()
-        suggestionAdapter.changeCursor(suggestionCursor)
-        suggestionAdapter.notifyDataSetChanged()
+        binding.btnCancel.setOnClickListener {
+            (activity as MainActivity).replacerFragment(CategoryFragment())
+        }
     }
 
     private fun setupAdapter() {
@@ -206,6 +168,24 @@ class SearchFragment : Fragment() {
         if (state) listFavorite.add(id1c) else listFavorite.remove(id1c)
         (activity as MainActivity).badgeFavorite.isVisible = listFavorite.isNotEmpty()
         viewModel.eventWishList(token, id1c)
+    }
+
+    private fun performSearch(query: String) {
+        Log.d("Mylog", "Viewmodel search == $query")
+        searchHistoryManager.saveQuery(query)
+        viewModel.getSearchResults(token, query)
+        updateHistory()
+    }
+
+    private fun updateHistory() {
+        val history = searchHistoryManager.getHistory()
+        adapterSearchHistory = SearchHistoryAdapter(history) { query ->
+            binding.editTextSearch.setQuery(query, false)
+            performSearch(query)
+        }
+        binding.rcHistory.adapter = adapterSearchHistory
+        binding.rcHistory.visibility = if (history.isEmpty()) View.GONE else View.VISIBLE
+        binding.llHistory.visibility = if (history.isEmpty()) View.GONE else View.VISIBLE
     }
 
     override fun onDestroyView() {

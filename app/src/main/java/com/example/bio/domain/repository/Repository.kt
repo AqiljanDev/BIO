@@ -19,4 +19,14 @@ interface Repository {
     suspend fun getProductCard(token: String, category: String): FindOneProduct
 
     suspend fun getCategoriesList(token: String): List<CategoriesFindAll>
+
+    suspend fun getCatalogFilter(
+        token: String,
+        category: String,
+        min: Int?,
+        max: Int?,
+        sort: String,
+        chars: String,
+        page: Int
+    ): Catalog
 }

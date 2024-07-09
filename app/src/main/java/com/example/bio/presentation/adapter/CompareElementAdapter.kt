@@ -19,7 +19,6 @@ import com.example.bio.domain.entities.compare.ProductWrapper
 import com.example.bio.presentation.data.CustomCompare
 
 class CompareElementAdapter(
-    private var compareList: List<CustomCompare>,
     private var products: List<ProductMiniCard>,
     private val clickToEventCompare: (prodId: String) -> Unit,
     private val clickToEventBasket: (prodId: String, count: Int) -> Unit,
@@ -28,6 +27,7 @@ class CompareElementAdapter(
 ) : ListAdapter<CustomCompare, CompareElementAdapter.CompareItemElementViewHolder>(
     CompareElementDiffCallback()
 ) {
+    private var compareList: List<CustomCompare> = listOf()
 
     inner class CompareItemElementViewHolder(
         private val binding: CompareItemElementBinding
@@ -36,7 +36,9 @@ class CompareElementAdapter(
         private var currentCount = 0
 
         @SuppressLint("PrivateResource")
-        fun bind(product: CustomCompare, position: Int) = with(binding) {
+        fun bind(product: CustomCompare) = with(binding) {
+            Log.d("Mylog", "Update bind \\ ${product.title} \\ = charact = ${product.characters.size}")
+            currentCount = checkBasket(product.id1c)
 
             if (product.title == "") {
                 imageViewPhoto.visibility = View.GONE
@@ -45,12 +47,12 @@ class CompareElementAdapter(
 
                 tvCountMax.visibility = View.GONE
                 btnBasket.visibility = View.GONE
+                tvCountState.visibility = View.GONE
                 llBasketActive.visibility = View.GONE
                 llPrices.visibility = View.GONE
 
                 cardViewRoot.cardElevation = 0f
                 cardViewRoot.setBackgroundResource(R.drawable.border_background)
-                rcCharacters.adapter = CompareCharactersAdapter(product.characters)
 
                 return
             }
@@ -58,7 +60,7 @@ class CompareElementAdapter(
             tvTitle.text = product.title
             tvPrice.text = "${product.price} ₸"
             tvCountMax.text = "Наличие:  ${product.count} шт"
-            rcCharacters.adapter = CompareCharactersAdapter(product.characters)
+            tvCountMy.text = currentCount.toString()
 
             if (product.photo != null) {
                 Glide.with(imageViewPhoto.context)
@@ -71,7 +73,7 @@ class CompareElementAdapter(
             imageViewDelete.setOnClickListener {
                 clickToEventCompare(product.id1c)
 
-                submitList(compareList.filter { it.id != product.id })
+                updateLists(compareList.filter { it.id != product.id }, products)
             }
 
             btnBasket.setOnClickListener {
@@ -82,6 +84,7 @@ class CompareElementAdapter(
                 llBasketActive.visibility = View.VISIBLE
                 tvCountMax.visibility = View.VISIBLE
                 btnBasket.visibility = View.GONE
+                tvCountState.visibility = View.GONE
             }
 
             btnMinus.setOnClickListener {
@@ -91,6 +94,7 @@ class CompareElementAdapter(
                     llBasketActive.visibility = View.GONE
                     tvCountMax.visibility = View.GONE
                     btnBasket.visibility = View.VISIBLE
+                    tvCountState.visibility = View.VISIBLE
                     return@setOnClickListener
                 }
 
@@ -127,10 +131,12 @@ class CompareElementAdapter(
             llBasketActive.visibility = View.GONE
             tvCountMax.visibility = View.GONE
             btnBasket.visibility = View.VISIBLE
+            tvCountState.visibility = View.VISIBLE
         } else {
             llBasketActive.visibility = View.VISIBLE
             tvCountMax.visibility = View.VISIBLE
             btnBasket.visibility = View.GONE
+            tvCountState.visibility = View.GONE
         }
     }
 
@@ -150,19 +156,20 @@ class CompareElementAdapter(
     override fun onBindViewHolder(holder: CompareItemElementViewHolder, position: Int) {
         Log.d("Mylog", "ADAPTER = ON BIND VIEW HOLDER")
         val data = compareList[position]
-        holder.bind(data, position)
+        holder.bind(data)
     }
 
     fun updateLists(
         newlist: List<CustomCompare>,
         products: List<ProductMiniCard>
     ) {
+
         compareList = newlist
         this.products = products
         submitList(compareList)
     }
 
-    fun checkBasket(id1c: String): Int {
+    private fun checkBasket(id1c: String): Int {
         var res = 0
         products.forEach {
             if (it.prodId == id1c) res = it.count
@@ -184,7 +191,7 @@ private class CompareElementDiffCallback : DiffUtil.ItemCallback<CustomCompare>(
     }
 
     override fun areContentsTheSame(oldItem: CustomCompare, newItem: CustomCompare): Boolean {
-        return oldItem.title == newItem.title
+        return oldItem == newItem
     }
 }
 

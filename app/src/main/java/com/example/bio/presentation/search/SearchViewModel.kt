@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.bio.domain.entities.cart.CartMini
 import com.example.bio.domain.entities.cart.PostCart
 import com.example.bio.domain.entities.collectCharacters.CollectCharacter
+import com.example.bio.domain.entities.findOne.Catalog
 import com.example.bio.domain.entities.findOne.Product
 import com.example.bio.domain.entities.wishList.WishListCompareMini
 import com.example.bio.domain.useCase.DeleteCartUseCase
+import com.example.bio.domain.useCase.GetCatalogFilterUseCase
 import com.example.bio.domain.useCase.GetCollectCharactersUseCase
 import com.example.bio.domain.useCase.GetMiniCartUseCase
 import com.example.bio.domain.useCase.GetMiniCompareUseCase
@@ -28,6 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val getSearchResultsUseCase: GetSearchResultsUseCase,
+    private val getCatalogFilterUseCase: GetCatalogFilterUseCase,
     private val getCollectCharactersUseCase: GetCollectCharactersUseCase,
     private val getMiniWishListGetUseCase: GetMiniWishListGetUseCase,
     private val getMiniCompareUseCase: GetMiniCompareUseCase,
@@ -41,6 +44,9 @@ class SearchViewModel @Inject constructor(
     private val _listProduct: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     val listProduct get() = _listProduct.asStateFlow()
 
+    private val _catalog: MutableSharedFlow<Catalog> = MutableSharedFlow()
+    val catalog get() = _catalog.asSharedFlow()
+
     private val _charactersCategory: MutableSharedFlow<CollectCharacter> = MutableSharedFlow()
     val characterCategory get() = _charactersCategory.asSharedFlow()
 
@@ -53,10 +59,33 @@ class SearchViewModel @Inject constructor(
     private val _cartMini: MutableSharedFlow<CartMini> = MutableSharedFlow()
     val cartMini get() = _cartMini.asSharedFlow()
 
+    private val _saveQuery: MutableStateFlow<String> = MutableStateFlow("")
+    val saveQuery get() = _saveQuery.asStateFlow()
+
+
     fun getSearchResults(token: String, message: String) {
         viewModelScope.launch {
             val res = getSearchResultsUseCase.execute(token, message)
             _listProduct.emit(res)
+            getWishListMini(token)
+            getCompareMini(token)
+            getCartMini(token)
+        }
+    }
+
+    fun getCatalog(
+        token: String,
+        category: String,
+        min: Int?,
+        max: Int?,
+        sort: String,
+        chars: String,
+        page: Int
+    ) {
+        viewModelScope.launch {
+            val res = getCatalogFilterUseCase.execute(token, category, min, max, sort, chars, page)
+
+            _catalog.emit(res)
             getWishListMini(token)
             getCompareMini(token)
             getCartMini(token)
@@ -120,4 +149,12 @@ class SearchViewModel @Inject constructor(
             _cartMini.emit(res)
         }
     }
+
+    fun saveQuery(catalog: String) {
+        viewModelScope.launch {
+            Log.d("Mylog", "Save query = $catalog")
+            _saveQuery.emit(catalog)
+        }
+    }
+
 }
