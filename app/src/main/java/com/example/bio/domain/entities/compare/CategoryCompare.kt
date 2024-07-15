@@ -1,6 +1,8 @@
 package com.example.bio.domain.entities.compare
 
+import com.example.bio.domain.entities.findOne.Discount
+
 interface CategoryCompare {
-    val discount: Any?  // Replace Any? with the correct type if known
+    val discount: Discount?
     val parentCategory: ParentCategoryCompare?
 }

@@ -1,10 +1,12 @@
 package com.example.bio.presentation.search
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -20,7 +22,6 @@ import com.example.bio.presentation.adapter.SearchHistoryAdapter
 import com.example.bio.presentation.card.ProductCardFragment
 import com.example.bio.presentation.category.CategoryFragment
 import com.example.bio.presentation.data.Quad
-import com.example.bio.presentation.filter.FilterFragment
 import com.example.data.SearchHistoryManager
 import com.example.data.SharedPreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -79,6 +80,8 @@ class SearchFragment : Fragment() {
                 query?.let {
                     performSearch(query)
                 }
+                val inputMethodManager = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
                 return true
             }
 
@@ -109,6 +112,7 @@ class SearchFragment : Fragment() {
             listOf(),
             listOf(),
             CartMiniDto(emptyList(), 0),
+            listOf(),
             { isState, id1c -> updateFavorite(isState, id1c) },
             { isState, id1c -> updateGroup(isState, id1c) },
             { prodId, count -> updateBasket(prodId, count) },
@@ -131,11 +135,12 @@ class SearchFragment : Fragment() {
             viewModel.listProduct,
             viewModel.wishListMini,
             viewModel.compareMini,
-            viewModel.cartMini
-        ) { catalog, wishList, compareList, cart ->
-            Quad(catalog, wishList, compareList, cart)
-        }.onEach { (catalog, wishList, compareList, cart) ->
-            adapter.updateLists(catalog, wishList, compareList, cart)
+            viewModel.cartMini,
+            viewModel.profileDiscount
+        ) { catalog, wishList, compareList, cart, profile ->
+            Quad(catalog, wishList, compareList, cart, profile)
+        }.onEach { (catalog, wishList, compareList, cart, profile) ->
+            adapter.updateLists(catalog, wishList, compareList, cart, profile)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 

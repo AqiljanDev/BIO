@@ -2,13 +2,8 @@ package com.example.bio.data.api
 
 import com.example.bio.data.dto.CatalogDto
 import com.example.bio.data.dto.CategoriesFindAllDto
-import com.example.bio.data.dto.ChildCategoryDto
 import com.example.bio.data.dto.collectCharacters.CollectCharactersDto
-import com.example.bio.domain.entities.CategoriesFindAll
-import com.example.bio.domain.entities.collectCharacters.CollectCharacter
-import com.example.bio.domain.entities.findOne.ChildCategory
 import com.example.core.UrlConstants.BASE_URL
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -43,4 +38,6 @@ interface CatalogService {
     suspend fun categoriesFindAll(
         @Header("Authorization") token: String
     ): List<CategoriesFindAllDto>
+
+
 }

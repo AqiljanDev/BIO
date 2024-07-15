@@ -6,16 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
-import com.example.bio.R
 import com.example.bio.data.dto.CartMiniDto
 import com.example.bio.data.dto.PostCartDto
 import com.example.bio.data.dto.collectCharacters.BrandDto
@@ -25,16 +19,12 @@ import com.example.bio.domain.entities.collectCharacters.Character
 import com.example.bio.presentation.MainActivity
 import com.example.bio.presentation.adapter.CategoryAdapter
 import com.example.bio.presentation.adapter.CharactersAdapter
-import com.example.bio.presentation.adapter.FilterCharactersAdapter
 import com.example.bio.presentation.card.ProductCardFragment
 import com.example.bio.presentation.data.Quad
 import com.example.bio.presentation.left_menu.CategoriesListFragment
 import com.example.bio.presentation.search.SearchViewModel
-import com.example.bio.utils.toggleItem
 import com.example.bio.utils.toggleItems
 import com.example.data.SharedPreferencesManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -42,7 +32,7 @@ import kotlinx.coroutines.flow.onEach
 
 
 @AndroidEntryPoint
-class FilterFragment : Fragment(), SheetFragment.BottomSheetListener {
+class FilterFragment : Fragment(), SheetFragment.BottomSheetListener, SortSheetFragment.BottomSheetListener {
 
     private val viewModel: SearchViewModel by viewModels()
     private val binding: FragmentFilterBinding by lazy {
@@ -58,7 +48,7 @@ class FilterFragment : Fragment(), SheetFragment.BottomSheetListener {
     private var currentCategory = "index"
     private var min: Int? = null
     private var max: Int? = null
-    private var sort: String = ""
+    private var sort: SORT = SORT.NEW
     private val listActiveId1c: MutableList<String> = mutableListOf()
     private var currentPage: Int = 1
 
@@ -88,6 +78,23 @@ class FilterFragment : Fragment(), SheetFragment.BottomSheetListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setFragmentResultListener("category_list") { _, bundle ->
+            bundle.getString("category")?.let { currentCategory = it }
+        }
+
+        // Установка слушателя результатов
+        setFragmentResultListener("result") { requestKey, bundle ->
+            val resultSort = bundle.getString("sort")
+            val resultCategory = bundle.getString("category")
+            val resultCharacters = bundle.getString("characters")
+            val resultPriceMin = bundle.getInt("price_min")
+            val resultPriceMax = bundle.getInt("price_max")
+
+            // Обработка полученного результата
+            Log.d("FirstFragment", "Result: $resultSort")
+        }
+
+
         Log.d("Mylog", "Catalog = $currentCategory")
         getDataRequest()
         setupAdapter()
@@ -116,13 +123,21 @@ class FilterFragment : Fragment(), SheetFragment.BottomSheetListener {
         }.launchIn(viewLifecycleOwner.lifecycleScope)
 
         binding.btnImgSort.setOnClickListener {
-            val sheetFragment = SheetFragment.newInstance()
-            sheetFragment.setTargetFragment(this, 0) // Устанавливаем целевой фрагмент
-            sheetFragment.show(parentFragmentManager, sheetFragment.tag)
+            val sortSheetFragment = SortSheetFragment.newInstance()
+            sortSheetFragment.setTargetFragment(this, 0)
+            sortSheetFragment.show(parentFragmentManager, sortSheetFragment.tag)
         }
 
         binding.btnImgFilter.setOnClickListener {
+            val bundle = Bundle().apply {
+                putString("sort", sort.message)
+                putString("category", currentCategory)
+                putString("characters", listCharactersCurrent.joinToString( separator = "." ))
+            }
 
+            (activity as MainActivity).replacerFragment(
+                FilterFullFragment().apply { arguments = bundle }
+            )
         }
 
         realizeCurrentCatalog()
@@ -134,6 +149,7 @@ class FilterFragment : Fragment(), SheetFragment.BottomSheetListener {
             listOf(),
             listOf(),
             CartMiniDto(emptyList(), 0),
+            listOf(),
             { isState, id1c -> updateFavorite(isState, id1c) },
             { isState, id1c -> updateGroup(isState, id1c) },
             { prodId, count -> updateBasket(prodId, count) },
@@ -156,12 +172,13 @@ class FilterFragment : Fragment(), SheetFragment.BottomSheetListener {
             viewModel.catalog,
             viewModel.wishListMini,
             viewModel.compareMini,
-            viewModel.cartMini
-        ) { catalog, wishList, compareList, cart ->
-            Quad(catalog.products, wishList, compareList, cart)
-        }.onEach { (catalog, wishList, compareList, cart) ->
+            viewModel.cartMini,
+            viewModel.profileDiscount
+        ) { catalog, wishList, compareList, cart, profile ->
+            Quad(catalog.products, wishList, compareList, cart, profile)
+        }.onEach { (catalog, wishList, compareList, cart, profile) ->
             Log.d("Mylog", "Combine oneach quad = ${catalog.size}")
-            adapter.updateLists(catalog, wishList, compareList, cart)
+            adapter.updateLists(catalog, wishList, compareList, cart, profile)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
@@ -198,7 +215,7 @@ class FilterFragment : Fragment(), SheetFragment.BottomSheetListener {
             currentCategory,
             min,
             max,
-            sort,
+            sort.message,
             listActiveId1c.joinToString(separator = "."),
             currentPage
         )
@@ -238,5 +255,21 @@ class FilterFragment : Fragment(), SheetFragment.BottomSheetListener {
 
     override fun getId1cActiveList(): MutableList<String> {
         return listActiveId1c
+    }
+
+    override fun onSortSelected(sort: SORT) {
+        this.sort = sort
+        getDataRequest()
+    }
+
+    override fun getCurrentSort(): SORT {
+        return sort
+    }
+
+    enum class SORT(val message: String, val translate: String) {
+        NEW(message = "new", translate = "Новые"),
+        OLD(message = "old", translate = "Старые"),
+        MIN(message = "min", translate = "Сначала дешевые"),
+        MAX(message = "max", translate = "Сначала дорогие")
     }
 }

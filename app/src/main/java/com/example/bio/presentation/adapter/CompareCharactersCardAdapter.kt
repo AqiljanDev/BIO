@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.bio.databinding.CompareCharactersItemBinding
-import com.example.bio.presentation.data.CustomCompare
 
 class CompareCharactersCardAdapter(
     private var listName: List<String>,

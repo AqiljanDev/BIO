@@ -1,6 +1,6 @@
 package com.example.bio.presentation.data
 
-data class CustomCompare(
+data class ProductWrapper(
     val id: Int = 0,
     val id1c: String = "",
     val title: String = "",

@@ -12,7 +12,10 @@ import com.example.bio.domain.useCase.GetCompareFullUseCase
 import com.example.bio.domain.useCase.GetMiniCartUseCase
 import com.example.bio.domain.useCase.GetMiniCompareUseCase
 import com.example.bio.domain.useCase.GetMiniWishListGetUseCase
+import com.example.bio.domain.useCase.GetOrdersFindMyUseCase
+import com.example.bio.domain.useCase.GetOrdersFindOneUseCase
 import com.example.bio.domain.useCase.GetProductCardUseCase
+import com.example.bio.domain.useCase.GetProfileDiscountUseCase
 import com.example.bio.domain.useCase.GetSearchResultsUseCase
 import dagger.Module
 import dagger.Provides
@@ -81,6 +84,21 @@ class DomainModule {
     @Provides
     fun provideGetCatalogFilterUseCase(repository: Repository): GetCatalogFilterUseCase {
         return GetCatalogFilterUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetProfileDiscountUseCase(repository: Repository): GetProfileDiscountUseCase {
+        return GetProfileDiscountUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetOrdersFindMyUseCase(repository: Repository): GetOrdersFindMyUseCase {
+        return GetOrdersFindMyUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetOrdersFindOneUseCase(repository: Repository): GetOrdersFindOneUseCase {
+        return GetOrdersFindOneUseCase(repository)
     }
 
 }

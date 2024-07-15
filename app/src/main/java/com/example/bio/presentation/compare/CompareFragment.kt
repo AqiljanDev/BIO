@@ -5,13 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bio.data.dto.PostCartDto
 import com.example.bio.databinding.FragmentCompareBinding
@@ -20,14 +18,12 @@ import com.example.bio.presentation.adapter.CompareCharactersAdapter
 import com.example.bio.presentation.adapter.CompareElementAdapter
 import com.example.bio.presentation.base.BaseBottomFragment
 import com.example.bio.presentation.card.ProductCardFragment
-import com.example.bio.presentation.data.CustomCompare
 import com.example.data.SharedPreferencesManager
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlin.reflect.typeOf
 
 
 @AndroidEntryPoint
@@ -73,6 +69,7 @@ class CompareFragment : BaseBottomFragment() {
 
         val adapterProduct = CompareElementAdapter(
             products = listOf(),
+            listProfileDiscount = listOf(),
             clickToEventCompare = { prodId -> eventCompare(prodId) },
             clickToEventBasket = { prodId, count -> eventCart(prodId, count) },
             clickDeleteBasket = { id -> deleteCart(id) },
@@ -135,10 +132,11 @@ class CompareFragment : BaseBottomFragment() {
 
         combine(
             viewModel.compareList,
-            viewModel.getCartMini
-        ) { compare, cartMini ->
-            Pair(compare, cartMini)
-        }.onEach { (compare, cartMini) ->
+            viewModel.getCartMini,
+            viewModel.profileDiscount
+        ) { compare, cartMini, profile ->
+            Triple(compare, cartMini, profile)
+        }.onEach { (compare, cartMini, profile) ->
             if (compare.products.isEmpty()) {
                 with(binding) {
                     tvProductEmpty.visibility = View.VISIBLE
@@ -168,33 +166,18 @@ class CompareFragment : BaseBottomFragment() {
                 binding.rcCharacters.visibility = View.VISIBLE
             }
 
-            // Обновляем customCompare с новыми характеристиками
-            val customCompare = compare.products.map {
-                CustomCompare(
-                    it.id,
-                    it.product.id1c,
-                    it.product.title,
-                    it.product.slug,
-                    it.product.photo,
-                    it.product.count,
-                    it.product.price,
-                    it.product.characters
-                )
-            }.toMutableList()
-
-            Log.d("Mylog", "Character 'compare' = $customCompare")
-            Log.d("Mylog", "Character product 'custom' size = ${customCompare.size}")
-            compareSize = customCompare.size
+            compareSize = compare.products.size
 
             // Обновляем адаптер
             adapterProduct.updateLists(
-                customCompare,
-                cartMini.products
+                compare.products,
+                cartMini.products,
+                profile
             )
 
             adapterChar.updateList(
                 compare.characters.map { it.title },
-                customCompare
+                compare.products
             )
 
             binding.rcViewPage.viewTreeObserver.addOnGlobalLayoutListener {

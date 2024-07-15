@@ -6,16 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bio.R
-import com.example.bio.databinding.CompareCharactersItemBinding
+import com.example.bio.data.dto.compare.ProductWrapperDto
 import com.example.bio.databinding.VerticalListBinding
-import com.example.bio.domain.entities.cart.CartFullProduct
-import com.example.bio.domain.entities.compare.CharactersToCompare
-import com.example.bio.presentation.data.CustomCompare
+import com.example.bio.domain.entities.compare.ProductWrapper
 
 class CompareCharactersAdapter(
     private var list: List<String>
-) : ListAdapter<CustomCompare, CompareCharactersAdapter.VerticalListItemViewHolder>(
+) : ListAdapter<ProductWrapper, CompareCharactersAdapter.VerticalListItemViewHolder>(
     CompareCharacterDiffCallback()
 ) {
 
@@ -23,9 +20,9 @@ class CompareCharactersAdapter(
         private val binding: VerticalListBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(char: CustomCompare) {
-            Log.d("Mylog", "Vertical item = ${char.title}")
-            binding.rcCharactersCard.adapter = CompareCharactersCardAdapter(list, char.characters)
+        fun bind(char: ProductWrapper) {
+            Log.d("Mylog", "Vertical item = ${char.product.title}")
+            binding.rcCharactersCard.adapter = CompareCharactersCardAdapter(list, char.product.characters)
         }
     }
 
@@ -47,19 +44,19 @@ class CompareCharactersAdapter(
         holder.bind(data)
     }
 
-    fun updateList(listCharacters: List<String>, listCustomCompare: List<CustomCompare>) {
+    fun updateList(listCharacters: List<String>, listCustomCompare: List<ProductWrapper>) {
         list = listCharacters
         submitList(listCustomCompare)
     }
 }
 
-private class CompareCharacterDiffCallback : DiffUtil.ItemCallback<CustomCompare>() {
-    override fun areItemsTheSame(oldItem: CustomCompare, newItem: CustomCompare): Boolean {
+private class CompareCharacterDiffCallback : DiffUtil.ItemCallback<ProductWrapper>() {
+    override fun areItemsTheSame(oldItem: ProductWrapper, newItem: ProductWrapper): Boolean {
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: CustomCompare, newItem: CustomCompare): Boolean {
-        return oldItem == newItem
+    override fun areContentsTheSame(oldItem: ProductWrapper, newItem: ProductWrapper): Boolean {
+        return oldItem as ProductWrapperDto == newItem as ProductWrapperDto
     }
 }
 

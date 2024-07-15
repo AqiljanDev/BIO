@@ -1,6 +1,7 @@
 package com.example.bio.presentation.adapter
 
 import android.annotation.SuppressLint
+import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,24 +11,26 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.example.bio.R
+import com.example.bio.data.dto.compare.ProductWrapperDto
 import com.example.bio.databinding.CompareItemElementBinding
 import com.example.bio.domain.entities.cart.ProductMiniCard
-import com.example.bio.domain.entities.compare.CharactersToCompare
-import com.example.bio.domain.entities.compare.CompareFull
-import com.example.bio.domain.entities.compare.ProductCompare
 import com.example.bio.domain.entities.compare.ProductWrapper
-import com.example.bio.presentation.data.CustomCompare
+import com.example.bio.domain.entities.userDiscount.UserDiscount
+import java.text.NumberFormat
+import java.util.Locale
 
 class CompareElementAdapter(
     private var products: List<ProductMiniCard>,
+    private var listProfileDiscount: List<UserDiscount>,
     private val clickToEventCompare: (prodId: String) -> Unit,
     private val clickToEventBasket: (prodId: String, count: Int) -> Unit,
     private val clickDeleteBasket: (id: Int) -> Unit,
     private val clickToCard: (slug: String) -> Unit
-) : ListAdapter<CustomCompare, CompareElementAdapter.CompareItemElementViewHolder>(
+) : ListAdapter<ProductWrapper, CompareElementAdapter.CompareItemElementViewHolder>(
     CompareElementDiffCallback()
 ) {
-    private var compareList: List<CustomCompare> = listOf()
+    private var compareList: List<ProductWrapper> = listOf()
+    private val formatMoney = NumberFormat.getNumberInstance(Locale("ru", "RU"))
 
     inner class CompareItemElementViewHolder(
         private val binding: CompareItemElementBinding
@@ -35,8 +38,9 @@ class CompareElementAdapter(
 
         private var currentCount = 0
 
-        @SuppressLint("PrivateResource")
-        fun bind(product: CustomCompare) = with(binding) {
+        @SuppressLint("PrivateResource", "SetTextI18n")
+        fun bind(productWrapper: ProductWrapper) = with(binding) {
+            val product = productWrapper.product
             Log.d("Mylog", "Update bind \\ ${product.title} \\ = charact = ${product.characters.size}")
             currentCount = checkBasket(product.id1c)
 
@@ -57,9 +61,15 @@ class CompareElementAdapter(
                 return
             }
 
+            val discount = product.discountPrice(listProfileDiscount)
+
+            tvPriceAction.visibility = if (discount.discountType == 0) View.GONE else View.VISIBLE
+            tvPrice.text = "${formatMoney.format(discount.price)} ₸"
+            tvPriceAction.text = "${product.price}"
+            tvPriceAction.paintFlags = tvPriceAction.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
             tvTitle.text = product.title
-            tvPrice.text = "${product.price} ₸"
-            tvCountMax.text = "Наличие:  ${product.count} шт"
+            tvCountMax.text = "Наличие:  ${formatMoney.format(product.count)} шт"
             tvCountMy.text = currentCount.toString()
 
             if (product.photo != null) {
@@ -73,7 +83,7 @@ class CompareElementAdapter(
             imageViewDelete.setOnClickListener {
                 clickToEventCompare(product.id1c)
 
-                updateLists(compareList.filter { it.id != product.id }, products)
+                updateLists(compareList.filter { it.id != productWrapper.id }, products, listProfileDiscount)
             }
 
             btnBasket.setOnClickListener {
@@ -160,11 +170,13 @@ class CompareElementAdapter(
     }
 
     fun updateLists(
-        newlist: List<CustomCompare>,
-        products: List<ProductMiniCard>
+        newlist: List<ProductWrapper>,
+        products: List<ProductMiniCard>,
+        listProfileDiscount: List<UserDiscount>
     ) {
 
         compareList = newlist
+        this.listProfileDiscount = listProfileDiscount
         this.products = products
         submitList(compareList)
     }
@@ -185,13 +197,13 @@ class CompareElementAdapter(
     }
 }
 
-private class CompareElementDiffCallback : DiffUtil.ItemCallback<CustomCompare>() {
-    override fun areItemsTheSame(oldItem: CustomCompare, newItem: CustomCompare): Boolean {
+private class CompareElementDiffCallback : DiffUtil.ItemCallback<ProductWrapper>() {
+    override fun areItemsTheSame(oldItem: ProductWrapper, newItem: ProductWrapper): Boolean {
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: CustomCompare, newItem: CustomCompare): Boolean {
-        return oldItem == newItem
+    override fun areContentsTheSame(oldItem: ProductWrapper, newItem: ProductWrapper): Boolean {
+        return oldItem as ProductWrapperDto == newItem as ProductWrapperDto
     }
 }
 

@@ -11,6 +11,6 @@ interface Categories {
     val popular: Int
     val parentId: String
     val discountId: String?
-    val discount: String?
+    val discount: Discount?
     val parentCategory: ParentCategory?
 }

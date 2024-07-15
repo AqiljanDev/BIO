@@ -6,30 +6,33 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bio.R
-import com.example.bio.data.dto.ProductDto
-import com.example.bio.data.dto.WishListCompareMiniDto
 import com.example.bio.databinding.ProductViewGroupBinding
 import com.example.bio.domain.entities.cart.CartMini
 import com.example.bio.domain.entities.findOne.Product
+import com.example.bio.domain.entities.userDiscount.UserDiscount
 import com.example.bio.domain.entities.wishList.WishListCompareMini
+import java.text.NumberFormat
+import java.util.Locale
 
 class CategoryAdapter(
     private val catalog: List<Product>,
     private var wishList: List<WishListCompareMini>,
     private var compareList: List<WishListCompareMini>,
     private var cart: CartMini,
+    private var listProfileDiscount: List<UserDiscount>,
     private val clickFavorite: (isState: Boolean, id1c: String) -> Unit,
     private val clickGroup: (isState: Boolean, id1c: String) -> Unit,
     private val clickEventBasket: (prodId: String, count: Int) -> Unit,
     private val clickDeleteBasket: (id: Int) -> Unit,
     private val clickToCard: (Product) -> Unit
 ) : ListAdapter<Product, CategoryAdapter.ProductViewHolder>(ProductDiffCallback()) {
+
+    private val formatMoney = NumberFormat.getNumberInstance(Locale("ru", "RU"))
 
     init {
         submitList(catalog)
@@ -54,8 +57,38 @@ class CategoryAdapter(
 
         @SuppressLint("SetTextI18n")
         fun bind(product: Product) = with(binding) {
+
+            val discount = product.discountPrice(listProfileDiscount)
+            Log.d(
+                "Mylog",
+                "Discount = price: ${discount.price}, type: ${discount.discountType}, value: ${discount.discountValue}"
+            )
+
+            when(discount.discountType) {
+                0 -> {
+                    tvPriceAction.visibility = View.GONE
+                    tvProcent.visibility = View.GONE
+                }
+                1 -> {
+                    tvPriceAction.visibility = View.VISIBLE
+                    tvProcent.visibility = View.VISIBLE
+                    tvProcent.text = "${discount.discountValue}%"
+                    tvProcent.setBackgroundResource(R.drawable.button_procent_background)
+                }
+                2 -> {
+                    tvPriceAction.visibility = View.VISIBLE
+                    tvProcent.visibility = View.VISIBLE
+                    tvProcent.text = "${formatMoney.format(discount.discountValue)}₸"
+                    tvProcent.setBackgroundResource(R.drawable.button_money_background)
+                }
+            }
+            tvPrice.text = "${formatMoney.format(discount.price)} ₸"
+            tvPriceAction.text = "${formatMoney.format(product.price)} ₸"
+            tvPriceAction.paintFlags = tvPriceAction.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+
             tvTitle.text = product.title
-            tvApt.text = "apt: ${product.article}"
+            tvApt.text = "арт: ${product.article}"
             Log.d("Mylog", "INNER CLASS BIND ${product.title}")
 
             if (product.charactersToProducts.isNotEmpty()) {
@@ -70,7 +103,6 @@ class CategoryAdapter(
                 }
             }
 
-            tvPriceAction.paintFlags = tvPriceAction.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
             if (product.gallery.isNotEmpty()) {
                 Glide.with(root.context)
@@ -123,7 +155,7 @@ class CategoryAdapter(
                     binding.tvCountMy.text = countProducts.toString()
                     updateBasketVisibility(binding, countProducts, product.id1c)
 
-                    if (countProducts == 0){
+                    if (countProducts == 0) {
                         Log.d("Mylog", "Id btn minus = ${product.title}")
                         cart.products.forEach {
                             if (it.prodId == product.id1c) {
@@ -174,10 +206,17 @@ class CategoryAdapter(
         return compareList.any { it.prodId == id1c }
     }
 
-    fun updateLists(newCatalog: List<Product>, newWishList: List<WishListCompareMini>, newCompareList: List<WishListCompareMini>, newCart: CartMini) {
+    fun updateLists(
+        newCatalog: List<Product>,
+        newWishList: List<WishListCompareMini>,
+        newCompareList: List<WishListCompareMini>,
+        newCart: CartMini,
+        profileDiscount: List<UserDiscount>
+    ) {
         wishList = newWishList
         compareList = newCompareList
         cart = newCart
+        listProfileDiscount = profileDiscount
         submitList(newCatalog)
     }
 }

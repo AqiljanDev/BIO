@@ -62,6 +62,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
     implementation("com.google.dagger:hilt-android:2.48")
+    implementation(libs.androidx.room.ktx)
     kapt ("com.google.dagger:hilt-android-compiler:2.48")
 
     // Glide

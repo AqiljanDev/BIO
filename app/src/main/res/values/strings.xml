@@ -17,7 +17,10 @@
     <string name="search">Поиск товаров</string>
     <string name="search_hint">Поиск товара</string>
     <string name="delete_history_item">стереть\n</string>
-
+    <string name="delivery_pickup">Самовывоз</string>
+    <string name="delivery_delivery">Доставка</string>
+    <string name="indefined">Не определен</string>
+    W
     <string-array name="method_delivery">
         <item>Самовывоз</item>
         <item>Доставка</item>
@@ -26,5 +29,10 @@
     <string-array name="checking_account">
         <item>Выберете расчетный счет</item>
         <item>8888888888</item>
+    </string-array>
+
+    <string-array name="initial_slider_values">
+        <item>0</item>
+        <item>1000000</item>
     </string-array>
 </resources>

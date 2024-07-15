@@ -1,20 +1,15 @@
 package com.example.bio.presentation.category
 
-import android.app.AlertDialog
-import android.content.DialogInterface
+import android.content.Context
 import android.graphics.Color
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.bio.R
 import com.example.bio.data.dto.CartMiniDto
@@ -28,6 +23,7 @@ import com.example.bio.presentation.MainActivity
 import com.example.bio.presentation.adapter.CategoryAdapter
 import com.example.bio.presentation.base.BaseBottomFragment
 import com.example.bio.presentation.card.ProductCardFragment
+import com.example.bio.presentation.data.BottomNavigationAnimator
 import com.example.bio.presentation.data.Quad
 import com.example.bio.presentation.data.State
 import com.example.bio.presentation.filter.FilterFragment
@@ -38,7 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class CategoryFragment : BaseBottomFragment() {
@@ -61,11 +57,21 @@ class CategoryFragment : BaseBottomFragment() {
     private var listGroup: MutableList<String> = mutableListOf()
 
     private lateinit var adapter: CategoryAdapter
+    private lateinit var bottomNavigationAnimator: BottomNavigationAnimator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             request = it.getString("category") ?: "index"
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BottomNavigationAnimator) {
+            bottomNavigationAnimator = context
+        } else {
+            throw ClassCastException("$context must implement BottomNavigationAnimator")
         }
     }
 
@@ -92,6 +98,10 @@ class CategoryFragment : BaseBottomFragment() {
             currentSlugCategory,
             currentPage
         )
+
+        viewModel.profileDiscount.onEach {
+            Log.d("Mylog", "Profile discount size === ${it.size}")
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
 
 
         setupAdapter()
@@ -148,6 +158,7 @@ class CategoryFragment : BaseBottomFragment() {
             listOf(),
             listOf(),
             CartMiniDto(emptyList(), 0),
+            listOf(),
             { isState, id1c -> updateFavorite(isState, id1c) },
             { isState, id1c -> updateGroup(isState, id1c) },
             { prodId, count -> updateBasket(prodId, count) },
@@ -176,10 +187,11 @@ class CategoryFragment : BaseBottomFragment() {
             viewModel.categoryProduct,
             viewModel.wishListMini,
             viewModel.compareMini,
-            viewModel.cartMini
-        ) { catalog, wishList, compareList, cart ->
-            Quad(catalog.products, wishList, compareList, cart)
-        }.onEach { (catalog, wishList, compareList, cart) ->
+            viewModel.cartMini,
+            viewModel.profileDiscount
+        ) { catalog, wishList, compareList, cart, profileDiscount ->
+            Quad(catalog.products, wishList, compareList, cart, profileDiscount)
+        }.onEach { (catalog, wishList, compareList, cart, profileDiscount) ->
             Log.d("Mylog", "Product size = ${catalog.size}")
             if (catalog.isEmpty()) {
                 binding.paginationView.visibility = View.GONE
@@ -188,7 +200,7 @@ class CategoryFragment : BaseBottomFragment() {
                 binding.paginationView.visibility = View.VISIBLE
                 binding.tvProductsEmpty.visibility = View.GONE
             }
-            adapter.updateLists(catalog, wishList, compareList, cart)
+            adapter.updateLists(catalog, wishList, compareList, cart, profileDiscount)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
@@ -213,6 +225,7 @@ class CategoryFragment : BaseBottomFragment() {
 
     private fun updateGroup(state: Boolean, id1c: String) {
         if (state) listGroup.add(id1c) else listGroup.remove(id1c)
+
         (activity as MainActivity).badgeGroup.isVisible = listGroup.isNotEmpty()
         viewModel.eventCompare(token, id1c)
     }
@@ -220,6 +233,7 @@ class CategoryFragment : BaseBottomFragment() {
     private fun updateFavorite(state: Boolean, id1c: String) {
         if (state) listFavorite.add(id1c) else listFavorite.remove(id1c)
         (activity as MainActivity).badgeFavorite.isVisible = listFavorite.isNotEmpty()
+        bottomNavigationAnimator.animateBottomMenuIcon(R.id.favorite)
         viewModel.eventWishList(token, id1c)
     }
 

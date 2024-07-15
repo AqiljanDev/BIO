@@ -6,16 +6,16 @@ import com.example.bio.data.api.retrofitProductCondition
 import com.example.bio.data.dto.WishListFullDto
 import com.example.bio.domain.entities.cart.CartMini
 import com.example.bio.domain.entities.cart.PostCart
+import com.example.bio.domain.entities.userDiscount.UserDiscount
 import com.example.bio.domain.entities.wishList.WishListCompareMini
 import com.example.bio.domain.useCase.DeleteCartUseCase
-import com.example.bio.domain.useCase.GetCatalogUseCase
 import com.example.bio.domain.useCase.GetMiniCartUseCase
 import com.example.bio.domain.useCase.GetMiniCompareUseCase
 import com.example.bio.domain.useCase.GetMiniWishListGetUseCase
+import com.example.bio.domain.useCase.GetProfileDiscountUseCase
 import com.example.bio.domain.useCase.PostCartEventUseCase
 import com.example.bio.domain.useCase.PostCompareEventUseCase
 import com.example.bio.domain.useCase.PostWishListEventUseCase
-import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +32,8 @@ class FavoriteViewModel @Inject constructor(
     private val postWishListEventUseCase: PostWishListEventUseCase,
     private val postCompareEventUseCase: PostCompareEventUseCase,
     private val postCartEventUseCase: PostCartEventUseCase,
-    private val deleteCartUseCase: DeleteCartUseCase
+    private val deleteCartUseCase: DeleteCartUseCase,
+    private val getProfileDiscountUseCase: GetProfileDiscountUseCase
 ) : ViewModel() {
 
     private val _fullProductList: MutableStateFlow<List<WishListFullDto>> = MutableStateFlow(listOf())
@@ -47,6 +48,9 @@ class FavoriteViewModel @Inject constructor(
     private val _cartMini: MutableSharedFlow<CartMini> = MutableSharedFlow()
     val cartMini get() = _cartMini.asSharedFlow()
 
+    private val _profileDiscount: MutableStateFlow<List<UserDiscount>> = MutableStateFlow(listOf())
+    val profileDiscount get() = _profileDiscount.asStateFlow()
+
     fun getProducts(token: String) {
         viewModelScope.launch {
             val res = retrofitProductCondition.getFullWishList(token)
@@ -56,6 +60,15 @@ class FavoriteViewModel @Inject constructor(
         getWishListMini(token)
         getCompareMini(token)
         getCartMini(token)
+        getProfileDiscount(token)
+    }
+
+    private fun getProfileDiscount(token: String) {
+        viewModelScope.launch {
+            val res = getProfileDiscountUseCase.execute(token)
+
+            _profileDiscount.emit(res)
+        }
     }
 
     private fun getWishListMini(token: String) {

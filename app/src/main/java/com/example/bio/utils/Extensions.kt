@@ -25,6 +25,15 @@ fun <T> MutableList<T>.toggleItem(item: T) {
     }
 }
 
+fun <T> MutableList<T>.toggleItemBasedOnList(item: T, checkList: List<T>) {
+    if (!checkList.contains(item)) {
+        if (!contains(item)) {
+            add(item)
+        }else
+            remove(item)
+    }
+}
+
 fun <T> MutableList<T>.toggleItems(items: List<T>) {
     items.forEach { item ->
         if (contains(item)) {

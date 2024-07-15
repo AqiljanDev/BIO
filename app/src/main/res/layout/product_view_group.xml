@@ -14,6 +14,7 @@
         android:layout_height="125dp"
         android:layout_marginStart="5dp"
         android:src="@drawable/camera_slash"
+        android:transitionName="shared_mini"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,7 +27,7 @@
         android:paddingVertical="3dp"
         android:text="32%"
         android:textColor="@color/white"
-        android:textSize="17sp"
+        android:textSize="15sp"
         android:fontFamily="@font/roboto_condensed_medium"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -268,7 +269,7 @@
         <TextView
             android:id="@+id/tv_price"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:fontFamily="@font/roboto_condensed_bold"
             android:text="263 250 ₸"
             android:textColor="@color/black"

@@ -1,7 +1,6 @@
 package com.example.bio.data.dto
 
 import com.example.bio.domain.entities.findOne.Categories
-import com.example.bio.domain.entities.findOne.ParentCategory
 
 data class CategoriesDto (
     override val id: Int,
@@ -14,6 +13,6 @@ data class CategoriesDto (
     override val popular: Int,
     override val parentId: String,
     override val discountId: String?,
-    override val discount: String?,
+    override val discount: DiscountDto?,
     override val parentCategory: ParentCategoryDto?
 ) : Categories

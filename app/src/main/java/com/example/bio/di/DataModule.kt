@@ -2,12 +2,14 @@ package com.example.bio.di
 
 import com.example.bio.data.datasource.CatalogRemoteDataSourceImpl
 import com.example.bio.data.datasource.ConditionRemoteDataSourceImpl
-import com.example.bio.data.repository.RepositoryImpl
 import com.example.bio.data.datasource.FilterRemoteDataSourceImpl
+import com.example.bio.data.datasource.ProfileDataSourceImpl
 import com.example.bio.data.repository.RepositoryConditionImpl
+import com.example.bio.data.repository.RepositoryImpl
 import com.example.bio.domain.repository.CatalogRemoteDataSource
 import com.example.bio.domain.repository.ConditionRemoteDataSource
 import com.example.bio.domain.repository.FilterRemoteDataSource
+import com.example.bio.domain.repository.ProfileDataSource
 import com.example.bio.domain.repository.Repository
 import com.example.bio.domain.repository.RepositoryCondition
 import dagger.Module
@@ -24,9 +26,10 @@ class DataModule {
     @Singleton
     fun provideRepository(
         catalogRemoteDataSource: CatalogRemoteDataSource,
-        searchRemoteDataSource: FilterRemoteDataSource
+        searchRemoteDataSource: FilterRemoteDataSource,
+        profileDataSourceImpl: ProfileDataSourceImpl
     ): Repository {
-        return RepositoryImpl(catalogRemoteDataSource, searchRemoteDataSource)
+        return RepositoryImpl(catalogRemoteDataSource, searchRemoteDataSource, profileDataSourceImpl)
     }
 
     @Provides
@@ -53,6 +56,12 @@ class DataModule {
     @Singleton
     fun provideConditionRemoteDataSource(): ConditionRemoteDataSource {
         return ConditionRemoteDataSourceImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileDataSource(): ProfileDataSource {
+        return ProfileDataSourceImpl()
     }
 
 }

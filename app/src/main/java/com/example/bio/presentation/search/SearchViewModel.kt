@@ -8,6 +8,7 @@ import com.example.bio.domain.entities.cart.PostCart
 import com.example.bio.domain.entities.collectCharacters.CollectCharacter
 import com.example.bio.domain.entities.findOne.Catalog
 import com.example.bio.domain.entities.findOne.Product
+import com.example.bio.domain.entities.userDiscount.UserDiscount
 import com.example.bio.domain.entities.wishList.WishListCompareMini
 import com.example.bio.domain.useCase.DeleteCartUseCase
 import com.example.bio.domain.useCase.GetCatalogFilterUseCase
@@ -15,6 +16,7 @@ import com.example.bio.domain.useCase.GetCollectCharactersUseCase
 import com.example.bio.domain.useCase.GetMiniCartUseCase
 import com.example.bio.domain.useCase.GetMiniCompareUseCase
 import com.example.bio.domain.useCase.GetMiniWishListGetUseCase
+import com.example.bio.domain.useCase.GetProfileDiscountUseCase
 import com.example.bio.domain.useCase.GetSearchResultsUseCase
 import com.example.bio.domain.useCase.PostCartEventUseCase
 import com.example.bio.domain.useCase.PostCompareEventUseCase
@@ -38,7 +40,8 @@ class SearchViewModel @Inject constructor(
     private val postWishListEventUseCase: PostWishListEventUseCase,
     private val postCompareEventUseCase: PostCompareEventUseCase,
     private val postCartEventUseCase: PostCartEventUseCase,
-    private val deleteCartUseCase: DeleteCartUseCase
+    private val deleteCartUseCase: DeleteCartUseCase,
+    private val getProfileDiscountUseCase: GetProfileDiscountUseCase
 ) : ViewModel() {
 
     private val _listProduct: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
@@ -62,6 +65,8 @@ class SearchViewModel @Inject constructor(
     private val _saveQuery: MutableStateFlow<String> = MutableStateFlow("")
     val saveQuery get() = _saveQuery.asStateFlow()
 
+    private val _profileDiscount: MutableStateFlow<List<UserDiscount>> = MutableStateFlow(listOf())
+    val profileDiscount get() = _profileDiscount.asStateFlow()
 
     fun getSearchResults(token: String, message: String) {
         viewModelScope.launch {
@@ -70,6 +75,15 @@ class SearchViewModel @Inject constructor(
             getWishListMini(token)
             getCompareMini(token)
             getCartMini(token)
+            getProfileDiscount(token)
+        }
+    }
+
+    private fun getProfileDiscount(token: String) {
+        viewModelScope.launch {
+            val res = getProfileDiscountUseCase.execute(token)
+
+            _profileDiscount.emit(res)
         }
     }
 

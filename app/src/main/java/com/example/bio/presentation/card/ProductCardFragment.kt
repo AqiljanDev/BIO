@@ -22,11 +22,9 @@ import com.example.bio.R
 import com.example.bio.data.dto.CartMiniDto
 import com.example.bio.data.dto.PostCartDto
 import com.example.bio.databinding.FragmentProductCardBinding
-import com.example.bio.databinding.ProductViewGroupBinding
 import com.example.bio.domain.entities.cart.CartMini
 import com.example.bio.domain.entities.findOne.Categories
 import com.example.bio.domain.entities.findOne.GalleryItem
-import com.example.bio.domain.entities.findOne.Info
 import com.example.bio.domain.entities.findOneProduct.FindOneProduct
 import com.example.bio.domain.entities.wishList.WishListCompareMini
 import com.example.bio.presentation.MainActivity
@@ -40,6 +38,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.text.NumberFormat
+import java.util.Locale
 
 @AndroidEntryPoint
 class ProductCardFragment : Fragment() {
@@ -107,6 +107,7 @@ class ProductCardFragment : Fragment() {
             listOf(),
             listOf(),
             CartMiniDto(emptyList(), 0),
+            listOf(),
             { isState, id1c -> updateFavorite(isState, id1c) },
             { isState, id1c -> updateGroup(isState, id1c) },
             { prodId, count -> updateBasket(prodId, count) },
@@ -125,11 +126,12 @@ class ProductCardFragment : Fragment() {
             viewmodel.product,
             viewmodel.wishListMini,
             viewmodel.compareMini,
-            viewmodel.cartMini
-        ) { product, wishList, compareList, cart ->
-            ProductCardQuad(product, wishList, compareList, cart)
-        }.onEach { (product, wishList, compareList, cart) ->
-            adapter.updateLists(product.other, wishList, compareList, cart)
+            viewmodel.cartMini,
+            viewmodel.profileDiscount
+        ) { product, wishList, compareList, cart, profile ->
+            ProductCardQuad(product, wishList, compareList, cart, profile)
+        }.onEach { (product, wishList, compareList, cart, profile) ->
+            adapter.updateLists(product.other, wishList, compareList, cart, profile)
 
             updateConditionProduct(product, wishList, compareList, cart)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
@@ -221,9 +223,21 @@ class ProductCardFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initializeFragment(product: FindOneProduct) = with(binding) {
+        val formatMoney = NumberFormat.getNumberInstance(Locale("ru", "RU"))
         Log.d("Mylog", "Product card = product image: ${product.gallery.size}")
+
         initializeChips(product.categories)
+
+        viewmodel.profileDiscount.onEach {
+            val discount = product.discountPrice(it)
+
+            tvPriceProcent.visibility = if (discount.discountType == 0) View.GONE else View.VISIBLE
+
+            tvCurrentPrice.text = "${formatMoney.format(discount.price)} ₸"
+            tvPriceProcent.text = "${formatMoney.format(product.price)} ₸"
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
 
         binding.btnPlus.setOnClickListener {
             if (countProducts < product.count) {
@@ -260,7 +274,7 @@ class ProductCardFragment : Fragment() {
         tvApt.text = "apt: ${product.article}"
         if (product.count > 0) {
             imageViewYesNo.setImageResource(R.drawable.ic_in_stock_yes)
-            tvCount.text = "${product.count} штук"
+            tvCount.text = "${formatMoney.format(product.count)} штук"
         }
 
         if (product.gallery.isNotEmpty()) {

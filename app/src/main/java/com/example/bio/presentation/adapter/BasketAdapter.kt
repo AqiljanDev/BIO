@@ -2,23 +2,24 @@ package com.example.bio.presentation.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Paint
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
+import com.example.bio.R
 import com.example.bio.databinding.BasketProductBinding
 import com.example.bio.domain.entities.cart.CartFullProduct
-import com.example.bio.domain.entities.cart.CartMini
 import com.example.bio.domain.entities.findOne.Product
+import com.example.bio.domain.entities.userDiscount.UserDiscount
 import java.text.NumberFormat
 import java.util.Locale
 
 class BasketAdapter(
     private var products: List<CartFullProduct>,
+    private var listProfileDiscount: List<UserDiscount>,
     private val clickToEvent: (prodId: String, count: Int) -> Unit,
     private val clickDeleteBasket: (id: Int, totalPrice: Int) -> Unit,
     private val clickToCard: (product: Product) -> Unit,
@@ -35,12 +36,36 @@ class BasketAdapter(
         fun bind(cart: CartFullProduct) = with(binding) {
             var currentCount = cart.count
 
+            val discount = cart.product.discountPrice(listProfileDiscount)
+            val price = discount.price
+
+            when(discount.discountType) {
+                0 -> {
+                    tvPriceAction.visibility = View.GONE
+                    tvProcent.visibility = View.GONE
+                }
+
+                1 -> {
+                    tvPriceAction.visibility = View.VISIBLE
+                    tvProcent.visibility = View.VISIBLE
+                    tvProcent.text = "${discount.discountValue}%"
+                    tvProcent.setBackgroundResource(R.drawable.button_procent_background)
+                }
+
+                2 -> {
+                    tvPriceAction.visibility = View.VISIBLE
+                    tvProcent.visibility = View.VISIBLE
+                    tvProcent.text = "${formatMoney.format(discount.discountValue)}₸"
+                    tvProcent.setBackgroundResource(R.drawable.button_money_background)
+                }
+            }
+
             tvTitle.text = cart.product.title
-            tvPriceOfOne.text = "${formatMoney.format(cart.product.price * 68 / 100)} ₸"
+            tvPriceOfOne.text = "${formatMoney.format(price)} ₸"
             tvCountMax.text = "Наличие:\n ${cart.product.count} шт"
             tvCountMy.text = cart.count.toString()
 
-            tvPrice.text = "${formatMoney.format((cart.count * cart.product.price) * 68 / 100)} ₸"
+            tvPrice.text = "${formatMoney.format(cart.count * price)} ₸"
             tvPriceAction.text = "${formatMoney.format(cart.count * cart.product.price)} ₸"
             tvPriceAction.paintFlags = tvPriceAction.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
@@ -60,7 +85,7 @@ class BasketAdapter(
                 binding.tvCountMy.text = currentCount.toString()
 
                 tvPrice.text =
-                    "${formatMoney.format((currentCount * cart.product.price) * 68 / 100)} ₸"
+                    "${formatMoney.format(currentCount * price)} ₸"
                 tvPriceAction.text = "${formatMoney.format(currentCount * cart.product.price)} ₸"
 
                 clickToEvent(cart.prodId, currentCount)
@@ -76,7 +101,7 @@ class BasketAdapter(
                 tvCountMy.text = currentCount.toString()
 
                 tvPrice.text =
-                    "${formatMoney.format((currentCount * cart.product.price) * 68 / 100)} ₸"
+                    "${formatMoney.format(currentCount * price)} ₸"
                 tvPriceAction.text = "${formatMoney.format(currentCount * cart.product.price)} ₸"
 
                 clickToEvent(cart.prodId, currentCount)
@@ -86,8 +111,8 @@ class BasketAdapter(
             }
 
             imageViewGarbage.setOnClickListener {
-                clickDeleteBasket(cart.id, getTotalPrice() - (currentCount * cart.product.price * 68 / 100))
-                updateLists(products.filter { it.id != cart.id })
+                clickDeleteBasket(cart.id, getTotalPrice() - (currentCount * price))
+                updateLists(products.filter { it.id != cart.id }, listProfileDiscount)
                 updateTotalPrice(getTotalPrice())
             }
 
@@ -113,13 +138,16 @@ class BasketAdapter(
     }
 
     fun getTotalPrice(): Int {
-        return products.sumOf { (it.count * it.product.price) * 68 / 100 }
+        return products.sumOf {
+            it.count * it.product.discountPrice(listProfileDiscount).price
+         }
     }
 
-    fun updateLists(newList: List<CartFullProduct>) {
+    fun updateLists(newList: List<CartFullProduct>, userDiscount: List<UserDiscount>) {
         products = newList
+        listProfileDiscount = userDiscount
         submitList(newList)
-        updateTotalPrice(getTotalPrice()) // Update total price when the list changes
+        updateTotalPrice(getTotalPrice())
     }
 }
 

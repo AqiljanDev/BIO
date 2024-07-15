@@ -1,15 +1,12 @@
 package com.example.bio.presentation.favorite
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.bio.R
 import com.example.bio.data.dto.CartMiniDto
 import com.example.bio.data.dto.PostCartDto
 import com.example.bio.data.dto.WishListFullDto
@@ -64,6 +61,7 @@ class FavoriteFragment : BaseBottomFragment() {
             listOf(), // Пустой список для списка избранных, если еще нет данных
             listOf(), // Пустой список для списка сравнения, если еще нет данных
             CartMiniDto(emptyList(), 0), // Пустой CartMini, если еще нет данных
+            listOf(),
             { isState, id1c -> updateFavorite(isState, id1c) },
             { isState, id1c -> updateGroup(isState, id1c) },
             { prodId, count -> updateBasket(prodId, count) },
@@ -83,11 +81,12 @@ class FavoriteFragment : BaseBottomFragment() {
             viewModel.fullProductList,
             viewModel.wishListMini,
             viewModel.compareMini,
-            viewModel.cartMini
-        ) { catalog, wishList, compareList, cart ->
-            Quad(catalog.map { it.product }, wishList, compareList, cart)
-        }.onEach { (catalog, wishList, compareList, cart) ->
-            adapter.updateLists(catalog, wishList, compareList, cart)
+            viewModel.cartMini,
+            viewModel.profileDiscount
+        ) { catalog, wishList, compareList, cart, profile ->
+            Quad(catalog.map { it.product }, wishList, compareList, cart, profile)
+        }.onEach { (catalog, wishList, compareList, cart, profile) ->
+            adapter.updateLists(catalog, wishList, compareList, cart, profile)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 

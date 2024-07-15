@@ -6,5 +6,5 @@ data class ParentCategoryDto (
     override val slug: String,
     override val title: String,
     override val parentCategory: ParentCategoryDto?,
-    override val discount: String?
+    override val discount: DiscountDto?
 ) : ParentCategory

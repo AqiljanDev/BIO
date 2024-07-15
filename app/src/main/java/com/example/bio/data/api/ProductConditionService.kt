@@ -8,7 +8,7 @@ import com.example.bio.data.dto.PostCartDto
 import com.example.bio.data.dto.WishListCompareMiniDto
 import com.example.bio.data.dto.WishListFullDto
 import com.example.bio.data.dto.compare.CompareFullDto
-import com.example.bio.domain.entities.wishList.WishListCompareMini
+import com.example.bio.data.dto.findOneOrder.FindOneOrderUserBillDto
 import com.example.core.UrlConstants.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -90,4 +90,9 @@ interface ProductConditionService {
         @Header("Authorization") token: String,
         @Body data: CreateCheckout
     ): OrderDetails
+
+    @GET("bills")
+    suspend fun getBillMy(
+        @Header("Authorization") token: String
+    ): List<FindOneOrderUserBillDto>
 }

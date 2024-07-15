@@ -35,5 +35,5 @@ class SharedPreferencesManager private constructor(context: Context) {
         TOKEN("token_token")
     }
 
-    // Add more methods as needed (e.g., putInt, getInt, etc.)
+
 }

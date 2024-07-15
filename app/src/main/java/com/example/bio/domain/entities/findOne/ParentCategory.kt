@@ -4,5 +4,5 @@ interface ParentCategory {
     val slug: String
     val title: String
     val parentCategory: ParentCategory?
-    val discount: String?
+    val discount: Discount?
 }

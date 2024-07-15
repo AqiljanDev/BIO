@@ -2,14 +2,14 @@ package com.example.bio.presentation
 
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
+import android.view.animation.OvershootInterpolator
+import android.view.animation.ScaleAnimation
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -18,10 +18,11 @@ import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.example.bio.R
 import com.example.bio.databinding.ActivityMainBinding
-import com.example.bio.utils.defaultCustom
+import com.example.bio.presentation.base.BaseBottomFragment
 import com.example.bio.presentation.basket.BasketFragment
 import com.example.bio.presentation.category.CategoryFragment
 import com.example.bio.presentation.compare.CompareFragment
+import com.example.bio.presentation.data.BottomNavigationAnimator
 import com.example.bio.presentation.favorite.FavoriteFragment
 import com.example.bio.presentation.left_menu.CategoriesListFragment
 import com.example.bio.presentation.left_menu.ContactsFragment
@@ -30,13 +31,17 @@ import com.example.bio.presentation.left_menu.HelpSupportFragment
 import com.example.bio.presentation.left_menu.StockFragment
 import com.example.bio.presentation.profile.ProfileFragment
 import com.example.bio.presentation.search.SearchFragment
+import com.example.bio.utils.defaultCustom
 import com.example.data.SharedPreferencesManager
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, BottomNavigationAnimator {
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -63,6 +68,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         badgeFavorite.defaultCustom(horizontalSize = -7)
         badgeBasket.defaultCustom(horizontalSize = -6)
 
+    }
+
+    override fun animateBottomMenuIcon(itemId: Int) {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        val menuView = bottomNavigationView.getChildAt(0) as? BottomNavigationMenuView
+        menuView?.let {
+            for (i in 0 until menuView.childCount) {
+                val menuItemView = menuView.getChildAt(i) as? BottomNavigationItemView
+                if (menuItemView != null && menuItemView.itemData.itemId == itemId) {
+                    val iconView = menuItemView.findViewById<ImageView>(android.R.id.icon)
+                    iconView?.let {
+                        val scale = ScaleAnimation(
+                            0f, 1f,  // Start and end values for the X axis scaling
+                            0f, 1f,  // Start and end values for the Y axis scaling
+                            ScaleAnimation.RELATIVE_TO_SELF, 0.5f,  // Pivot point of X scaling
+                            ScaleAnimation.RELATIVE_TO_SELF, 0.5f) // Pivot point of Y scaling
+                        scale.duration = 500
+                        scale.interpolator = OvershootInterpolator()
+                        it.startAnimation(scale)
+                    }
+                }
+            }
+        }
     }
 
     private fun realizeToolbar() {
@@ -128,10 +156,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun replacerFragment(fragment: Fragment) {
         val fragmentTrans = supportFragmentManager.beginTransaction()
+
+        if (fragment !is BaseBottomFragment) {
+            // Устанавливаем анимацию для открытия и закрытия фрагмента
+            fragmentTrans.setCustomAnimations(
+                R.anim.slide_in_right,  // Анимация при открытии фрагмента
+                R.anim.slide_out_left  // Анимация при закрытии фрагмента
+            )
+        } else {
+            fragmentTrans.setCustomAnimations(
+                R.anim.fade_in,  // Анимация при открытии фрагмента
+                R.anim.fade_out  // Анимация при закрытии фрагмента
+            )
+        }
+
+        // Заменяем текущий фрагмент новым
         fragmentTrans.replace(R.id.main_container, fragment)
         fragmentTrans.addToBackStack(null) // Добавляем транзакцию в back stack
+
+        // Выполняем транзакцию
         fragmentTrans.commit()
     }
+
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

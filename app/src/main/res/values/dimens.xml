@@ -3,4 +3,5 @@
     <dimen name="twenty">30dp</dimen>
     <dimen name="fourteen_sp">14sp</dimen>
     <dimen name="viewpager_item_padding">15dp</dimen>
+    <dimen name="margin_radio_button">10dp</dimen>
 </resources>

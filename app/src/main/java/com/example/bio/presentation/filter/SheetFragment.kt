@@ -3,15 +3,14 @@ package com.example.bio.presentation.filter
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.bio.R
 import com.example.bio.databinding.FragmentSheetBinding
 import com.example.bio.domain.entities.collectCharacters.Character
 import com.example.bio.presentation.adapter.FilterCharactersAdapter
-import com.example.bio.utils.toggleItem
+import com.example.bio.utils.toggleItemBasedOnList
+import com.example.bio.utils.toggleItems
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class SheetFragment : BottomSheetDialogFragment() {
@@ -25,7 +24,6 @@ class SheetFragment : BottomSheetDialogFragment() {
     interface BottomSheetListener {
         fun onApplyClicked(char: List<String>)
         fun onCharactersList(): List<Character>
-
         fun getId1cActiveList(): List<String>
         fun getTitleBrand(): String
     }
@@ -46,9 +44,11 @@ class SheetFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val listCharacterId: MutableList<String> = mutableListOf()
-        val adapter = FilterCharactersAdapter(listOf(), listOf()) {
+        val listActive = listener?.getId1cActiveList() ?: listOf()
+
+        val adapter = FilterCharactersAdapter(mutableListOf()) {
             Log.d("Mylog", "CharId = $it")
-            listCharacterId.toggleItem(it)
+            listCharacterId.toggleItemBasedOnList(it, listActive)
         }
         binding.rcCharacters.adapter = adapter
 
@@ -57,7 +57,8 @@ class SheetFragment : BottomSheetDialogFragment() {
         }
 
         binding.btnReset.setOnClickListener {
-            // Реализуйте логику сброса
+            adapter.updateList(listOf(), emptyList())
+            listCharacterId.toggleItems(listActive)
         }
 
         binding.btnEnter.setOnClickListener {
@@ -67,7 +68,6 @@ class SheetFragment : BottomSheetDialogFragment() {
         }
 
         val list = listener?.onCharactersList()
-        val listActive = listener?.getId1cActiveList() ?: listOf()
         list?.let { character ->
             adapter.updateList(character, listActive)
         }
@@ -79,3 +79,4 @@ class SheetFragment : BottomSheetDialogFragment() {
         fun newInstance() = SheetFragment()
     }
 }
+

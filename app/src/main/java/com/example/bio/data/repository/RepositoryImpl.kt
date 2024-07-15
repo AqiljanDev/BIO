@@ -1,19 +1,23 @@
 package com.example.bio.data.repository
 
-import com.example.bio.data.dto.CatalogDto
 import com.example.bio.domain.entities.CategoriesFindAll
 import com.example.bio.domain.entities.collectCharacters.CollectCharacter
 import com.example.bio.domain.entities.findOne.Catalog
 import com.example.bio.domain.entities.findOne.Product
+import com.example.bio.domain.entities.findOneOrder.FindOneOrder
 import com.example.bio.domain.entities.findOneProduct.FindOneProduct
+import com.example.bio.domain.entities.myOrder.MyOrder
+import com.example.bio.domain.entities.userDiscount.UserDiscount
 import com.example.bio.domain.repository.CatalogRemoteDataSource
 import com.example.bio.domain.repository.FilterRemoteDataSource
+import com.example.bio.domain.repository.ProfileDataSource
 import com.example.bio.domain.repository.Repository
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
     private val catalogDataSource: CatalogRemoteDataSource,
-    private val filterDataSource: FilterRemoteDataSource
+    private val filterDataSource: FilterRemoteDataSource,
+    private val profileDataSource: ProfileDataSource
 ) : Repository {
     override suspend fun getPagingCatalog(
         token: String,
@@ -49,6 +53,18 @@ class RepositoryImpl @Inject constructor(
         page: Int
     ): Catalog {
         return filterDataSource.getFindOneFilter(token, category, min, max, sort, chars, page)
+    }
+
+    override suspend fun getProfileDiscount(token: String): List<UserDiscount> {
+        return profileDataSource.getProfileDiscount(token)
+    }
+
+    override suspend fun getOrdersFindMy(token: String): List<MyOrder> {
+        return profileDataSource.getOrdersFindMy(token)
+    }
+
+    override suspend fun getOrdersFindOne(token: String, id: Int): FindOneOrder {
+        return profileDataSource.getOrdersFinOne(token, id)
     }
 
 }

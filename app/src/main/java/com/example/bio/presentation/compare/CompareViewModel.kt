@@ -5,14 +5,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.bio.domain.entities.cart.CartMini
 import com.example.bio.domain.entities.cart.PostCart
 import com.example.bio.domain.entities.compare.CompareFull
+import com.example.bio.domain.entities.userDiscount.UserDiscount
 import com.example.bio.domain.useCase.DeleteCartUseCase
 import com.example.bio.domain.useCase.GetCompareFullUseCase
 import com.example.bio.domain.useCase.GetMiniCartUseCase
+import com.example.bio.domain.useCase.GetProfileDiscountUseCase
 import com.example.bio.domain.useCase.PostCartEventUseCase
 import com.example.bio.domain.useCase.PostCompareEventUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +26,8 @@ class CompareViewModel @Inject constructor(
     private val getMiniCartUseCase: GetMiniCartUseCase,
     private val postCartEventUseCase: PostCartEventUseCase,
     private val postCompareEventUseCase: PostCompareEventUseCase,
-    private val deleteCartUseCase: DeleteCartUseCase
+    private val deleteCartUseCase: DeleteCartUseCase,
+    private val getProfileDiscountUseCase: GetProfileDiscountUseCase
 ): ViewModel() {
     private val _compareList: MutableSharedFlow<CompareFull> = MutableSharedFlow()
     val compareList get() = _compareList.asSharedFlow()
@@ -30,12 +35,24 @@ class CompareViewModel @Inject constructor(
     private val _getCartMini: MutableSharedFlow<CartMini> = MutableSharedFlow()
     val getCartMini get() = _getCartMini.asSharedFlow()
 
+    private val _profileDiscount: MutableStateFlow<List<UserDiscount>> = MutableStateFlow(listOf())
+    val profileDiscount get() = _profileDiscount.asStateFlow()
+
     fun getCompares(token: String) {
         viewModelScope.launch {
             val res = getCompareFullUseCase.execute(token)
             _compareList.emit(res)
         }
         getCartMini(token)
+        getProfileDiscount(token)
+    }
+
+    private fun getProfileDiscount(token: String) {
+        viewModelScope.launch {
+            val res = getProfileDiscountUseCase.execute(token)
+
+            _profileDiscount.emit(res)
+        }
     }
 
     private fun getCartMini(token: String) {

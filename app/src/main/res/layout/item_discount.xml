@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_discount_ll_root"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/button_procent_background"
+    android:padding="8dp"
+    android:gravity="center"
+    android:layout_margin="10dp">
+
+    <TextView
+        android:id="@+id/discount_percentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="70%"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/discount_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginStart="7dp"
+        android:text="Газосварочное оборудование"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+</LinearLayout>
+
