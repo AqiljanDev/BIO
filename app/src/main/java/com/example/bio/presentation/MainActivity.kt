@@ -22,7 +22,6 @@ import com.example.bio.presentation.base.BaseBottomFragment
 import com.example.bio.presentation.basket.BasketFragment
 import com.example.bio.presentation.category.CategoryFragment
 import com.example.bio.presentation.compare.CompareFragment
-import com.example.bio.presentation.data.BottomNavigationAnimator
 import com.example.bio.presentation.favorite.FavoriteFragment
 import com.example.bio.presentation.left_menu.CategoriesListFragment
 import com.example.bio.presentation.left_menu.ContactsFragment
@@ -41,11 +40,11 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, BottomNavigationAnimator {
-    private val binding: ActivityMainBinding by lazy {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
-    private val sharedPreference = SharedPreferencesManager.getInstance(this)
+    private val sharedPreference by lazy { SharedPreferencesManager.getInstance(this) }
 
     val badgeGroup by lazy { binding.bottomNavigation.getOrCreateBadge(R.id.group) }
     val badgeFavorite by lazy { binding.bottomNavigation.getOrCreateBadge(R.id.favorite) }
@@ -68,28 +67,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         badgeFavorite.defaultCustom(horizontalSize = -7)
         badgeBasket.defaultCustom(horizontalSize = -6)
 
-    }
-
-    override fun animateBottomMenuIcon(itemId: Int) {
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        val menuView = bottomNavigationView.getChildAt(0) as? BottomNavigationMenuView
-        menuView?.let {
-            for (i in 0 until menuView.childCount) {
-                val menuItemView = menuView.getChildAt(i) as? BottomNavigationItemView
-                if (menuItemView != null && menuItemView.itemData.itemId == itemId) {
-                    val iconView = menuItemView.findViewById<ImageView>(android.R.id.icon)
-                    iconView?.let {
-                        val scale = ScaleAnimation(
-                            0f, 1f,  // Start and end values for the X axis scaling
-                            0f, 1f,  // Start and end values for the Y axis scaling
-                            ScaleAnimation.RELATIVE_TO_SELF, 0.5f,  // Pivot point of X scaling
-                            ScaleAnimation.RELATIVE_TO_SELF, 0.5f) // Pivot point of Y scaling
-                        scale.duration = 500
-                        scale.interpolator = OvershootInterpolator()
-                        it.startAnimation(scale)
-                    }
-                }
-            }
+        supportFragmentManager.addOnBackStackChangedListener {
+            Log.d("Mylog", "Support fragment manager")
+            updateBottomNavigation()
         }
     }
 
@@ -115,22 +95,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 R.id.catalog -> {
                     replacerFragment(CategoryFragment())
                 }
-
                 R.id.group -> {
                     badgeGroup.isVisible = false
                     replacerFragment(CompareFragment())
                 }
-
                 R.id.favorite -> {
                     badgeFavorite.isVisible = false
                     replacerFragment(FavoriteFragment())
                 }
-
                 R.id.basket -> {
                     badgeBasket.isVisible = false
                     replacerFragment(BasketFragment())
                 }
-
                 R.id.profile -> {
                     replacerFragment(ProfileFragment())
                 }
@@ -139,45 +115,55 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         binding.tvLogout.setOnClickListener {
-            AlertDialog.Builder(this)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle(R.string.quit)
-                .setMessage(R.string.really_quit)
-                .setPositiveButton(R.string.yes,
-                    DialogInterface.OnClickListener { dialog, which ->
-                        Log.d("Mylog", "Run onclick")
-                        sharedPreference.removeString(SharedPreferencesManager.KEYS.TOKEN)
-                        finish()
-                    })
-                .setNegativeButton(R.string.no, null)
-                .show()
+            sharedPreference.removeString(SharedPreferencesManager.KEYS.TOKEN)
+            finish()
         }
     }
 
     fun replacerFragment(fragment: Fragment) {
-        val fragmentTrans = supportFragmentManager.beginTransaction()
+        val fragmentManager = supportFragmentManager
+        val currentFragment = fragmentManager.findFragmentById(R.id.main_container)
 
+        // Check if the fragment is the same type
+        if (currentFragment?.javaClass == fragment.javaClass) return
+
+        val fragmentTrans = fragmentManager.beginTransaction()
         if (fragment !is BaseBottomFragment) {
-            // Устанавливаем анимацию для открытия и закрытия фрагмента
             fragmentTrans.setCustomAnimations(
-                R.anim.slide_in_right,  // Анимация при открытии фрагмента
-                R.anim.slide_out_left  // Анимация при закрытии фрагмента
+                R.anim.slide_in_right,
+                R.anim.slide_out_left
             )
         } else {
             fragmentTrans.setCustomAnimations(
-                R.anim.fade_in,  // Анимация при открытии фрагмента
-                R.anim.fade_out  // Анимация при закрытии фрагмента
+                R.anim.fade_in,
+                R.anim.fade_out
             )
         }
 
-        // Заменяем текущий фрагмент новым
         fragmentTrans.replace(R.id.main_container, fragment)
-        fragmentTrans.addToBackStack(null) // Добавляем транзакцию в back stack
-
-        // Выполняем транзакцию
-        fragmentTrans.commit()
+        fragmentTrans.addToBackStack(null)
+        fragmentTrans.commitAllowingStateLoss()
     }
 
+    private fun updateBottomNavigation() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.main_container)
+        Log.d("Mylog", "open update cf = $currentFragment")
+        val newSelectedItemId = when (currentFragment) {
+            is CategoryFragment -> R.id.catalog
+            is CompareFragment -> R.id.group
+            is FavoriteFragment -> R.id.favorite
+            is BasketFragment -> R.id.basket
+            is ProfileFragment -> R.id.profile
+            else -> null
+        }
+
+        // Check if the selected item is different
+        if (newSelectedItemId != null && binding.bottomNavigation.selectedItemId != newSelectedItemId) {
+            binding.bottomNavigation.selectedItemId = newSelectedItemId
+        } else {
+            Log.d("Mylog", "current fragment = $currentFragment")
+        }
+    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -190,11 +176,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("Mylog", "On destroy Main activity")
-    }
-
 }
+
+
+
+

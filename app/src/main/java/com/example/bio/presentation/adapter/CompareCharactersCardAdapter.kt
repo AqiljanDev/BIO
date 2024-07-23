@@ -17,12 +17,12 @@ class CompareCharactersCardAdapter(
         private val binding: CompareCharactersItemBinding
     ): ViewHolder(binding.root) {
 
-        fun bind(title: String, position: Int) {
-            Log.d("Mylog", "char card. Title = $title")
+        fun bind(position: Int) {
+            Log.d("log", "list = $$listName, position = $position, listData = $listData,")
             binding.tvCharacterName.text = listName[position]
-            binding.tvTitle.text = title
+            binding.tvTitle.text = listData[position]
 
-            if (title != "-") binding.tvTitle.gravity = Gravity.START
+            if (listData[position] != "-") binding.tvTitle.gravity = Gravity.START
         }
     }
 
@@ -42,8 +42,7 @@ class CompareCharactersCardAdapter(
     override fun getItemCount(): Int = listData.size
 
     override fun onBindViewHolder(holder: CompareCharactersItemViewHolder, position: Int) {
-        val data = listData[position]
-        holder.bind(data, position)
+        holder.bind(position)
     }
 
 }

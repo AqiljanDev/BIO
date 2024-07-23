@@ -32,7 +32,10 @@ import com.example.bio.presentation.adapter.CategoryAdapter
 import com.example.bio.presentation.adapter.CharactersCardAdapter
 import com.example.bio.presentation.category.CategoryFragment
 import com.example.bio.presentation.data.ProductCardQuad
+import com.example.bio.utils.vibratePhone
+import com.example.core.UrlConstants
 import com.example.data.SharedPreferencesManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
@@ -68,6 +71,9 @@ class ProductCardFragment : Fragment() {
     private var currentImageIndex = 0
     private var downX: Float = 0f
 
+    private val bottomNavigationView: BottomNavigationView? by lazy {
+        activity?.findViewById(R.id.bottom_navigation)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -175,6 +181,8 @@ class ProductCardFragment : Fragment() {
     private fun updateBasket(prodId: String, count: Int) {
         viewmodel.eventCart(token, PostCartDto(prodId, count))
         (activity as MainActivity).badgeBasket.isVisible = true
+
+        requireContext().vibratePhone()
     }
 
     private fun deleteBasket(id: Int) {
@@ -189,13 +197,18 @@ class ProductCardFragment : Fragment() {
 
     private fun updateGroup(state: Boolean, id1c: String) {
         if (state) listGroup.add(id1c) else listGroup.remove(id1c)
+
         (activity as MainActivity).badgeGroup.isVisible = listGroup.isNotEmpty()
+        if (listGroup.isNotEmpty()) requireContext().vibratePhone()
         viewmodel.eventCompare(token, id1c)
     }
 
     private fun updateFavorite(state: Boolean, id1c: String) {
         if (state) listFavorite.add(id1c) else listFavorite.remove(id1c)
         (activity as MainActivity).badgeFavorite.isVisible = listFavorite.isNotEmpty()
+
+        if (listFavorite.isNotEmpty()) requireContext().vibratePhone()
+
         viewmodel.eventWishList(token, id1c)
     }
 
@@ -324,7 +337,7 @@ class ProductCardFragment : Fragment() {
             val imageView = ImageView(context)
             Log.d("Mylog", "Images = ${productImages[i].photo}")
             Glide.with(requireContext())
-                .load("http://192.168.8.3:4040/img/products/${productImages[i].photo}")
+                .load( UrlConstants.IMG_PRODUCT_URL + productImages[i].photo)
                 .into(imageView)
 
             imageView.layoutParams = RelativeLayout.LayoutParams(

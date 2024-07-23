@@ -144,53 +144,69 @@ class BasketFragment : BaseBottomFragment() {
         binding.btnChecout.setOnClickListener {
             val methodDeliveryId = binding.spinnerMethodDelivery.selectedItemId + 1
             val checkAccountId = binding.spinnerCheckingAccount.selectedItemId + 1
-            val address = binding.tvAddress.text
-            val comment = binding.tvComment.text
+            val address = binding.editTextAddress.text
+            val comment = binding.editTextComment.text
             var listProduct = listOf<ProductBasketCreate>()
 
-            viewModel.getCartFull(sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN))
+            // Обработка возможных ошибок
+            try {
+                viewModel.getCartFull(sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN))
 
-            viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-                combine(
-                    viewModel.cartFull,
-                    viewModel.profileDiscount,
-                    viewModel.billMy
-                ) { cart, profile, bill ->
-                    Triple(cart, profile, bill)
-                }.collect { (cart, profile, bill) ->
-                    listProduct = cart.products.map {
-                        ProductBasketCreate(
-                            it.id,
-                            it.count,
-                            it.product.price,
-                            it.product.discountPrice(profile).discountValue.toString()
+                viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                    combine(
+                        viewModel.cartFull,
+                        viewModel.profileDiscount,
+                        viewModel.billMy
+                    ) { cart, profile, bill ->
+                        Triple(cart, profile, bill)
+                    }.collect { (cart, profile, bill) ->
+                        listProduct = cart.products.map {
+                            ProductBasketCreate(
+                                it.id,
+                                it.count,
+                                it.product.price,
+                                it.product.discountPrice(profile).discountValue.toString()
+                            )
+                        }
+                        val productsGson = Gson().toJson(listProduct)
+
+                        Log.d("log", "Address: $address, Comment: $comment, Bill: ${bill},  Product === $productsGson")
+
+                        val product = CreateCheckout(
+                            address.toString(),
+                            comment.toString(),
+                            if (bill.isEmpty()) 1 else bill[0].usersId,
+                            methodDeliveryId.toInt(),
+                            "Скидка 20",
+                            productsGson
                         )
+
+                        try {
+                            // Попробуйте добавить обработку исключений здесь
+                            viewModel.createOrder(
+                                sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN),
+                                product
+                            )
+                            Log.d("Mylog", "Order created successfully")
+                        } catch (e: Exception) {
+                            Log.e("Mylog", "Error creating order", e)
+                        }
+
+                        try {
+                            viewModel.getCartFull(sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN))
+                        } catch (e: Exception) {
+                            Log.e("Mylog", "Error refreshing cart", e)
+                        }
+
+                        // Прерываем сбор после одного вызова
+                        cancel()
                     }
-                    val productsGson = Gson().toJson(listProduct)
-
-                    Log.d("Mylog", "Product === $productsGson")
-
-                    val product = CreateCheckout(
-                        address.toString(),
-                        comment.toString(),
-                        if (bill.isEmpty()) 1 else bill[0].usersId,
-                        methodDeliveryId.toInt(),
-                        "Скидка 20",
-                        productsGson
-                    )
-
-                    // Здесь мы вызываем createOrder только один раз, когда product заполнен
-                    viewModel.createOrder(
-                        sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN),
-                        product
-                    )
-                    viewModel.getCartFull(sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN))
-
-                    // Прерываем сбор после одного вызова
-                    cancel()
                 }
+            } catch (e: Exception) {
+                Log.e("Mylog", "Error in checkout process", e)
             }
         }
+
 
 
     }

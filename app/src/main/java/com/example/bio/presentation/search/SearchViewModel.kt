@@ -22,6 +22,7 @@ import com.example.bio.domain.useCase.PostCartEventUseCase
 import com.example.bio.domain.useCase.PostCompareEventUseCase
 import com.example.bio.domain.useCase.PostWishListEventUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -69,7 +70,7 @@ class SearchViewModel @Inject constructor(
     val profileDiscount get() = _profileDiscount.asStateFlow()
 
     fun getSearchResults(token: String, message: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val res = getSearchResultsUseCase.execute(token, message)
             _listProduct.emit(res)
             getWishListMini(token)

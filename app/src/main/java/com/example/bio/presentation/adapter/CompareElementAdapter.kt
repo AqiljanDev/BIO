@@ -16,6 +16,7 @@ import com.example.bio.databinding.CompareItemElementBinding
 import com.example.bio.domain.entities.cart.ProductMiniCard
 import com.example.bio.domain.entities.compare.ProductWrapper
 import com.example.bio.domain.entities.userDiscount.UserDiscount
+import com.example.core.UrlConstants
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -74,7 +75,7 @@ class CompareElementAdapter(
 
             if (product.photo != null) {
                 Glide.with(imageViewPhoto.context)
-                    .load("http://192.168.8.3:4040/img/products/${product.photo}")
+                    .load(UrlConstants.IMG_PRODUCT_URL + product.photo)
                     .placeholder(R.drawable.camera_slash) // Плейсхолдер до загрузки изображения
                     .error(R.drawable.camera_slash)
                     .into(imageViewPhoto)

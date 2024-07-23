@@ -19,6 +19,7 @@ import com.example.bio.presentation.adapter.OrdersHistoryAdapter
 import com.example.bio.presentation.category.CategoryFragment
 import com.example.bio.presentation.profile.orders.card.OrderHistoryCardFragment
 import com.example.data.SharedPreferencesManager
+import com.example.login.ui.main.passwordRestore.PasswordRestoreFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -55,6 +56,7 @@ class OrdersFragment : Fragment() {
                         OrderHistoryCardFragment().apply { arguments = bundle }
                     ).commit()
             }
+
         }
         binding.rcHistoryOrders.adapter = adapter
 
@@ -63,15 +65,47 @@ class OrdersFragment : Fragment() {
             viewModel.ordersFindMy
         ) { profileDiscount, ordersFindMy ->
             Pair(profileDiscount, ordersFindMy)
-        }.onEach { (profileDiscount, ordersFindMy) ->
+        }.onEach { (profileDiscount, ordersFindMy) -> with(binding) {
             Log.d(
                 "Mylog",
                 "OrderFragment: Discount.size = ${profileDiscount.size}, Orders.size = ${ordersFindMy.size}"
             )
 
+            if (profileDiscount.isEmpty()) {
+                tvHistory.visibility = View.GONE
+                rcHistoryOrders.visibility = View.GONE
+            } else {
+                tvHistory.visibility = View.VISIBLE
+                rcHistoryOrders.visibility = View.VISIBLE
+            }
+
+            if (profileDiscount.isEmpty()) {
+                tvMyDiscount.visibility = View.GONE
+                chipGroup.visibility = View.GONE
+            } else {
+                tvMyDiscount.visibility = View.VISIBLE
+                chipGroup.visibility = View.VISIBLE
+            }
+
+            if (profileDiscount.isEmpty() && ordersFindMy.isEmpty()) {
+                tvMyDiscount.visibility = View.GONE
+                tvHistory.visibility = View.GONE
+                rcHistoryOrders.visibility = View.GONE
+                chipGroup.visibility = View.GONE
+
+                tvNotOrders.visibility = View.VISIBLE
+            }else {
+                tvMyDiscount.visibility = View.VISIBLE
+                tvHistory.visibility = View.VISIBLE
+                rcHistoryOrders.visibility = View.VISIBLE
+                chipGroup.visibility = View.VISIBLE
+
+                tvNotOrders.visibility = View.GONE
+            }
+
             realizeChipGroup(profileDiscount)
             adapter.submitList(ordersFindMy)
-
+        }
         }.launchIn(viewLifecycleOwner.lifecycleScope)
 
 
@@ -101,7 +135,6 @@ class OrdersFragment : Fragment() {
             val discountView = createDiscountView(
                 "${char.value}%", char.userCategory?.title ?: "", binding.chipGroup.context
             )
-            Toast.makeText(requireContext(), "Click chip: ${char.value}", Toast.LENGTH_SHORT).show()
 
             discountView.setOnClickListener {
                 val bundle =

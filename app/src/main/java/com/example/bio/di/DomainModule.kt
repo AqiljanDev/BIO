@@ -3,6 +3,7 @@ package com.example.bio.di
 import com.example.bio.domain.repository.Repository
 import com.example.bio.domain.repository.RepositoryCondition
 import com.example.bio.domain.useCase.DeleteCartUseCase
+import com.example.bio.domain.useCase.GetCabinetFindMyUseCase
 import com.example.bio.domain.useCase.GetCartFullUseCase
 import com.example.bio.domain.useCase.GetCatalogFilterUseCase
 import com.example.bio.domain.useCase.GetCatalogUseCase
@@ -17,6 +18,7 @@ import com.example.bio.domain.useCase.GetOrdersFindOneUseCase
 import com.example.bio.domain.useCase.GetProductCardUseCase
 import com.example.bio.domain.useCase.GetProfileDiscountUseCase
 import com.example.bio.domain.useCase.GetSearchResultsUseCase
+import com.example.bio.domain.useCase.PutCabinetUpdateUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -99,6 +101,16 @@ class DomainModule {
     @Provides
     fun provideGetOrdersFindOneUseCase(repository: Repository): GetOrdersFindOneUseCase {
         return GetOrdersFindOneUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetCabinetFindMyUseCase(repository: Repository): GetCabinetFindMyUseCase {
+        return GetCabinetFindMyUseCase(repository)
+    }
+
+    @Provides
+    fun providePutCabinetUpdateUseCase(repository: Repository): PutCabinetUpdateUseCase {
+        return PutCabinetUpdateUseCase(repository)
     }
 
 }

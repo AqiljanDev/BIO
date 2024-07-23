@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -14,7 +15,10 @@ import com.example.bio.data.dto.PostCartDto
 import com.example.bio.databinding.FragmentOrderHistoryCardBinding
 import com.example.bio.presentation.MainActivity
 import com.example.bio.presentation.adapter.OrderHistoryCardAdapter
+import com.example.bio.presentation.profile.orders.OrdersFragment
+import com.example.bio.utils.vibratePhone
 import com.example.data.SharedPreferencesManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -36,6 +40,10 @@ class OrderHistoryCardFragment : Fragment() {
     }
     private val token by lazy {
         sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN)
+    }
+
+    private val bottomNavigationView: BottomNavigationView? by lazy {
+        activity?.findViewById(R.id.bottom_navigation)
     }
 
     private val formatMoney = NumberFormat.getNumberInstance(Locale("ru", "RU"))
@@ -105,11 +113,25 @@ class OrderHistoryCardFragment : Fragment() {
                 adapter.updateList(order.products, cart)
             }
         }.launchIn(viewLifecycleOwner.lifecycleScope)
+
+        (activity as MainActivity).onBackPressedDispatcher.addCallback(viewLifecycleOwner, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                parentFragmentManager.beginTransaction()
+                    .replace(
+                        R.id.fragment_container,
+                        OrdersFragment()
+                    ).commit()
+            }
+
+        })
+
     }
 
     private fun updateBasket(prodId: String, count: Int) {
         viewModel.eventCart(token, PostCartDto(prodId, count))
         (activity as MainActivity).badgeBasket.isVisible = true
+
+        requireContext().vibratePhone()
     }
 
     private fun deleteBasket(id: Int) {
@@ -119,5 +141,7 @@ class OrderHistoryCardFragment : Fragment() {
         } catch (ex: Exception) {
             Log.d("Mylog", "Exception === ${ex.message}")
         }
+
+        (activity as MainActivity).badgeBasket.isVisible = false
     }
 }

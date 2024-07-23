@@ -167,7 +167,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:textStyle="bold"
-                android:textSize="18dp"
+                android:textSize="22sp"
                 android:textColor="@color/black"
                 android:gravity="center"
                 android:text="98 100 ₸" />
@@ -177,7 +177,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
-                android:textSize="15dp"
+                android:textSize="17dp"
                 android:fontFamily="@font/roboto_condensed_regular"
                 android:gravity="center"
                 android:text="218 000 ₸"

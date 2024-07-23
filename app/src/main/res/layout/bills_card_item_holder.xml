@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="5dp"
+    android:background="@drawable/button_background_passive"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- BIK -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="БИК: "
+            android:textColor="@color/small_text_color"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tv_bik"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="88888888"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+    </LinearLayout>
+
+    <!-- IIK -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ИИК: "
+            android:textColor="@color/small_text_color"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tv_iik"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="88888888"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+    </LinearLayout>
+
+    <!-- BANK -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Банк: "
+            android:textColor="@color/small_text_color"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tv_bank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="88888888"
+            android:textColor="@color/black"
+            android:textSize="17sp" />
+
+    </LinearLayout>
+
+    <!-- BUTTONS: redactor and delete -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="31dp"
+            android:background="@drawable/button_background"
+            android:paddingHorizontal="3dp"
+            android:text="Удалить"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_refactor"
+            android:layout_width="wrap_content"
+            android:layout_height="31dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/button_background"
+            android:paddingHorizontal="4dp"
+            android:text="Редактировать"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -2,9 +2,9 @@ package com.example.bio.domain.entities.findOneOrder
 
 interface FindOneOrderUserBill {
     val id: Int
-    val bank: String
-    val code: String
-    val kbe: String
+    var bank: String
+    var code: String
+    var kbe: String
     val status: Int
     val usersId: Int
 }

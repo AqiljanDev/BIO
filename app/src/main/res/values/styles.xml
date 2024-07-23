@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="BottomNavigationViewTextAppearance" parent="TextAppearance.MaterialComponents.Caption">
-        <item name="android:textSize">@dimen/bottom_navigation_text_size</item>
-        <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:paddingStart">0dp</item>
-        <item name="android:paddingEnd">0dp</item>
+    <style name="BottomNavigationViewTextAppearance" parent="Widget.Design.BottomNavigationView">
+        <item name="android:textSize">12sp</item> <!-- Размер текста можно изменить по своему усмотрению -->
     </style>
+
 
     <style name="BottomNavigationViewStyle" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="itemIconSize">@dimen/bottom_navigation_icon_size</item>
         <item name="itemTextAppearanceActive">@style/BottomNavigationViewTextAppearance</item>
         <item name="itemTextAppearanceInactive">@style/BottomNavigationViewTextAppearance</item>
+        <item name="itemTextColor">@color/orange</item>
     </style>
+
 
     <style name="CustomChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
         <item name="chipBackgroundColor">@color/chip_background_color</item>
@@ -32,4 +31,12 @@
     </style>
 
     <color name="chip_background_color">#DFDFDF</color>
+
+
+    <style name="RoundedCornersDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
 </resources>

@@ -10,11 +10,11 @@
 
     <item android:id="@+id/favorite"
         android:title="Избранное"
-        android:icon="@drawable/ic_bottom_navigation_heart" />
+        android:icon="@mipmap/ic_bottom_navigation_hearth" />
 
     <item android:id="@+id/basket"
         android:title="Корзина"
-        android:icon="@drawable/ic_bottom_navigation_basket" />
+        android:icon="@mipmap/ic_bottom_navigation_basket" />
 
     <item android:id="@+id/profile"
         android:title="Профиль"

@@ -18,7 +18,7 @@ val retrofitPassRestore: PasswordRestore = Retrofit.Builder()
 interface PasswordRestore {
 
     @POST("auth/password/code/send")
-    suspend fun passwordCodeSend(@Body passwordCodeSendData: PasswordCodeSendData): Boolean
+    suspend fun passwordCodeSend(@Body passwordCodeSendData: PasswordCodeSendData)
 
     @POST("auth/password/code/check")
     suspend fun passwordCodeCheck(@Body passwordCodeCheckData: PasswordCodeCheckData): Boolean

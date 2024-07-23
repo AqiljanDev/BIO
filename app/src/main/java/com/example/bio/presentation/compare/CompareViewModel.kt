@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bio.domain.entities.cart.CartMini
 import com.example.bio.domain.entities.cart.PostCart
+import com.example.bio.domain.entities.collectCharacters.Brand
 import com.example.bio.domain.entities.compare.CompareFull
 import com.example.bio.domain.entities.userDiscount.UserDiscount
 import com.example.bio.domain.useCase.DeleteCartUseCase
+import com.example.bio.domain.useCase.GetCollectCharactersUseCase
 import com.example.bio.domain.useCase.GetCompareFullUseCase
 import com.example.bio.domain.useCase.GetMiniCartUseCase
 import com.example.bio.domain.useCase.GetProfileDiscountUseCase
@@ -23,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CompareViewModel @Inject constructor(
     private val getCompareFullUseCase: GetCompareFullUseCase,
+    private val getCollectCharactersUseCase: GetCollectCharactersUseCase,
     private val getMiniCartUseCase: GetMiniCartUseCase,
     private val postCartEventUseCase: PostCartEventUseCase,
     private val postCompareEventUseCase: PostCompareEventUseCase,
@@ -31,6 +34,9 @@ class CompareViewModel @Inject constructor(
 ): ViewModel() {
     private val _compareList: MutableSharedFlow<CompareFull> = MutableSharedFlow()
     val compareList get() = _compareList.asSharedFlow()
+
+    private val _collectCharacter: MutableSharedFlow<List<Brand>> = MutableSharedFlow()
+    val collectCharacter get() = _collectCharacter.asSharedFlow()
 
     private val _getCartMini: MutableSharedFlow<CartMini> = MutableSharedFlow()
     val getCartMini get() = _getCartMini.asSharedFlow()
@@ -52,6 +58,14 @@ class CompareViewModel @Inject constructor(
             val res = getProfileDiscountUseCase.execute(token)
 
             _profileDiscount.emit(res)
+        }
+    }
+
+    fun getCollectCharacter(token: String, slug: String) {
+        viewModelScope.launch {
+            val res = getCollectCharactersUseCase.execute(token, slug)
+
+            _collectCharacter.emit(res.characters)
         }
     }
 

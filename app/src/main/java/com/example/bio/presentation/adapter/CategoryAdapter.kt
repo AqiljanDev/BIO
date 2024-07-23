@@ -16,6 +16,7 @@ import com.example.bio.domain.entities.cart.CartMini
 import com.example.bio.domain.entities.findOne.Product
 import com.example.bio.domain.entities.userDiscount.UserDiscount
 import com.example.bio.domain.entities.wishList.WishListCompareMini
+import com.example.core.UrlConstants
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -106,7 +107,7 @@ class CategoryAdapter(
 
             if (product.gallery.isNotEmpty()) {
                 Glide.with(root.context)
-                    .load("http://192.168.8.3:4040/img/products/" + product.gallery[0].photo)
+                    .load(UrlConstants.IMG_PRODUCT_URL + product.gallery[0].photo)
                     .into(imageViewMain)
             }
 
@@ -147,7 +148,6 @@ class CategoryAdapter(
             // Initialize countProducts with value from the basket
             var countProducts = cart.products.find { it.prodId == product.id1c }?.count ?: 0
             binding.tvCountMy.text = countProducts.toString()
-            updateBasketVisibility(binding, countProducts, product.id1c)
 
             binding.btnMinus.setOnClickListener {
                 if (countProducts > 0) {

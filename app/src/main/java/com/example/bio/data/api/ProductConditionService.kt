@@ -10,6 +10,7 @@ import com.example.bio.data.dto.WishListFullDto
 import com.example.bio.data.dto.compare.CompareFullDto
 import com.example.bio.data.dto.findOneOrder.FindOneOrderUserBillDto
 import com.example.core.UrlConstants.BASE_URL
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -89,7 +90,7 @@ interface ProductConditionService {
     suspend fun createCheckout(
         @Header("Authorization") token: String,
         @Body data: CreateCheckout
-    ): OrderDetails
+    ): Response<OrderDetails>
 
     @GET("bills")
     suspend fun getBillMy(

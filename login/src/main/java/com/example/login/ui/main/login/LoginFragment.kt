@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.data.SharedPreferencesManager
+import com.example.login.LoginActivity
 
 import com.example.login.R
 import com.example.login.data.Repository
@@ -50,6 +51,10 @@ class LoginFragment : Fragment() {
             viewModel.login(LoginData(email, pass))
         }
 
+        binding.tvForgotPassword.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_passwordRestoreFragment)
+        }
+
         viewModel.stateLogin.onEach {
 
             when (it) {
@@ -59,17 +64,17 @@ class LoginFragment : Fragment() {
 
                 is StateSealedClass.Success -> {
 
+                    Log.d("Mylog", "token: ${it.token}")
                     val sharedPreferences = SharedPreferencesManager.getInstance(requireContext())
                     sharedPreferences.putString(SharedPreferencesManager.KEYS.TOKEN, it.token)
 
-                    activity?.finish()
-
+                    (activity as LoginActivity).finish()
                     Log.d("Mylog", "Open account")
                 }
 
                 is StateSealedClass.Failed -> {
                     binding.tvIncorrectFormat.visibility = View.VISIBLE
-
+                    binding.tvIncorrectFormat.text = it.message
 
                 }
             }

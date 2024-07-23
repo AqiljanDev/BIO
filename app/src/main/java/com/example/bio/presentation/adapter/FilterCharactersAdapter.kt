@@ -16,6 +16,7 @@ class FilterCharactersAdapter(
     FilterCharacterStateDiffUtil()
 ) {
 
+
     init {
         submitList(characterStates)
     }
@@ -24,15 +25,39 @@ class FilterCharactersAdapter(
         private val binding: SelectionCharactersBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(characterState: CharacterState) {
-            binding.tvTitle.text = characterState.character.title
-            binding.checkBox.isChecked = characterState.isActive
+        fun bind(characterState: CharacterState) = with(binding) {
+            tvTitle.text = characterState.character.title
 
-            binding.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            // Удаляем текущий слушатель, чтобы избежать вызова при программной установке isChecked
+            checkBox.setOnCheckedChangeListener(null)
+
+            // Программно устанавливаем состояние checkBox
+            checkBox.isChecked = characterState.isActive
+
+            // Восстанавливаем слушатель
+            checkBox.setOnCheckedChangeListener { _, isChecked ->
                 characterState.isActive = isChecked
                 clickCheckBox(characterState.character.id1c)
             }
+
+            root.setOnClickListener {
+                // Удаляем текущий слушатель перед программной установкой isChecked
+                checkBox.setOnCheckedChangeListener(null)
+
+                // Меняем состояние checkBox
+                checkBox.isChecked = !checkBox.isChecked
+
+                // Восстанавливаем слушатель после установки isChecked
+                checkBox.setOnCheckedChangeListener { _, isChecked ->
+                    characterState.isActive = isChecked
+                    clickCheckBox(characterState.character.id1c)
+                }
+
+                // Выполняем действие по клику
+                clickCheckBox(characterState.character.id1c)
+            }
         }
+
     }
 
     override fun onCreateViewHolder(
@@ -53,24 +78,18 @@ class FilterCharactersAdapter(
     }
 
     fun updateList(characters: List<Character>, activeIds: List<String>) {
-        if (characters.isEmpty()) {
-            characterStates = characterStates.map { CharacterState(it.character, false) }
-            submitList(characterStates)
-            notifyDataSetChanged()
-            return
-        }
-
         characterStates = characters.map { character ->
             CharacterState(character, activeIds.contains(character.id1c))
         }
-
         submitList(characterStates)
     }
 
-    fun uncheckAll() {
-        characterStates.forEach { it.isActive = false }
-        // Обновляем видимые и не видимые элементы
-        notifyDataSetChanged()
+    fun resetAllCheckboxes() {
+        characterStates = characterStates.map { character ->
+            character.copy( isActive = false )
+        }
+
+        submitList(characterStates)
     }
 }
 

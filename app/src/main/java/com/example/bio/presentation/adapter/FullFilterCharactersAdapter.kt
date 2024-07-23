@@ -14,19 +14,28 @@ import com.example.bio.domain.entities.collectCharacters.Brand
 import com.google.android.material.chip.Chip
 
 class FullFilterCharactersAdapter(
-    private var listActive: List<String>
+    private var listActive: List<String>,
+    private val clickChip: (id1c: String) -> Unit
 ) : ListAdapter<Brand, FullFilterCharactersAdapter.FilterViewHolder>(BrandDiffCallback()) {
 
-    class FilterViewHolder(private val binding: FullFilterCharactersViewHolderBinding) :
+    inner class FilterViewHolder(private val binding: FullFilterCharactersViewHolderBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(brand: Brand, listActive: List<String>) = with(binding) {
             tvTitle.text = brand.title
+
             chipGroup.removeAllViews()
             for (character in brand.characters) {
+
                 val chip = Chip(chipGroup.context).apply {
+                    setChipBackgroundColorResource(
+                        if (brandIsActive(
+                                character.id1c,
+                                listActive
+                            )
+                        ) R.color.button_pressed_color else R.color.white_standart
+                    )
                     text = character.title
-                    setChipBackgroundColorResource(R.color.white_standart_active)
                     setTextColor(Color.WHITE)
                     chipStartPadding = 5f
                     chipEndPadding = 5f
@@ -35,11 +44,22 @@ class FullFilterCharactersAdapter(
                     isClickable = true
                     isCheckable = false
                     setOnClickListener {
-                        setChipBackgroundColorResource(R.color.button_default_color)
+                        clickChip(character.id1c)
+                        setChipBackgroundColorResource(
+                            if (brandIsActive(
+                                    character.id1c,
+                                    listActive
+                                )
+                            ) R.color.button_pressed_color else R.color.white_standart
+                        )
                     }
                 }
                 chipGroup.addView(chip)
             }
+        }
+
+        private fun brandIsActive(charId1c: String, listActive: List<String>): Boolean {
+            return listActive.any { it == charId1c }
         }
     }
 
@@ -60,8 +80,16 @@ class FullFilterCharactersAdapter(
 
     fun updateList(characters: List<Brand>, split: List<String>) {
         listActive = split
-        submitList(characters)
+        Log.d("Mylog", "UpdateList full filter character adapter")
+
+        // Ограничиваем список до 100 элементов
+        val limitedList = if (characters.size > 100) characters.subList(0, 100) else characters
+        submitList(limitedList) {
+            // Use the ListAdapter's submitList method's commit callback to ensure the list is updated before any other action
+            notifyDataSetChanged()
+        }
     }
+
 
     class BrandDiffCallback : DiffUtil.ItemCallback<Brand>() {
         override fun areItemsTheSame(oldItem: Brand, newItem: Brand): Boolean {

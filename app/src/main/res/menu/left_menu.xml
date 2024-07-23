@@ -6,7 +6,7 @@
 
     <item android:id="@+id/price_sale"
         android:title="Акции"
-        android:icon="@drawable/ic_left_menu_price_sale" />
+        android:icon="@mipmap/ic_left_menu_price_sale" />
 
     <item android:id="@+id/delivery_shipping"
         android:title="Доставка и оплата"
@@ -18,6 +18,6 @@
 
     <item android:id="@+id/help_support"
         android:title="Сервисный центр"
-        android:icon="@drawable/ic_left_menu_help_support" />
+        android:icon="@mipmap/ic_left_menu_help_support" />
 
 </menu>

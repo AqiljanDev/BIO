@@ -21,13 +21,8 @@ val retrofitAuth = Retrofit.Builder()
 interface AuthenticationApi {
 
     @POST("auth/login")
-    suspend fun login(@Body loginData: LoginData): AuthReturnClass
+    suspend fun login(@Body loginData: LoginData): Response<AuthReturnClass>
 
     @POST("auth/registration")
-    suspend fun registration(@Body registerData: RegisterData): AuthReturnClass
-
-    @GET("auth/check")
-    suspend fun testGet(
-        @Header("Authorization") token: String
-    )
+    suspend fun registration(@Body registerData: RegisterData): Response<String>
 }

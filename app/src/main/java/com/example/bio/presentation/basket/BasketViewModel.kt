@@ -1,5 +1,6 @@
 package com.example.bio.presentation.basket
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bio.data.api.retrofitProductCondition
@@ -39,48 +40,76 @@ class BasketViewModel @Inject constructor(
 
     fun getCartFull(token: String) {
         viewModelScope.launch {
-            val res = getCartFullUseCase.execute(token)
-            _cartFull.emit(res)
-        }
+            try {
+                val res = getCartFullUseCase.execute(token)
+                _cartFull.emit(res)
+            } catch (e: Exception) {
+                Log.e("BasketViewModel", "Error getting cart full", e)
+            }
 
-        getProfileDiscount(token)
-        getBillMy(token)
+            getProfileDiscount(token)
+            getBillMy(token)
+        }
     }
 
     private fun getProfileDiscount(token: String) {
         viewModelScope.launch {
-            val res = getProfileDiscountUseCase.execute(token)
-
-            _profileDiscount.emit(res)
+            try {
+                val res = getProfileDiscountUseCase.execute(token)
+                _profileDiscount.emit(res)
+            } catch (e: Exception) {
+                Log.e("BasketViewModel", "Error getting profile discount", e)
+            }
         }
     }
 
     fun postCart(token: String, postCart: PostCart) {
         viewModelScope.launch {
-            postCartEventUseCase.execute(token, postCart)
-        }
+            try {
+                postCartEventUseCase.execute(token, postCart)
+            } catch (e: Exception) {
+                Log.e("BasketViewModel", "Error posting cart", e)
+            }
 
-        getCartFull(token)
+            getCartFull(token)
+        }
     }
 
     fun deleteCart(token: String, id: Int) {
         viewModelScope.launch {
-            deleteCartUseCase.execute(token, id)
+            try {
+                deleteCartUseCase.execute(token, id)
+            } catch (e: Exception) {
+                Log.e("BasketViewModel", "Error deleting cart", e)
+            }
         }
     }
 
     fun getBillMy(token: String) {
         viewModelScope.launch {
-            val res = retrofitProductCondition.getBillMy(token)
-            _billMy.emit(res)
+            try {
+                val res = retrofitProductCondition.getBillMy(token)
+                _billMy.emit(res)
+            } catch (e: Exception) {
+                Log.e("BasketViewModel", "Error getting bill", e)
+            }
         }
     }
 
     fun createOrder(token: String, createCheckout: CreateCheckout) {
         viewModelScope.launch {
-            retrofitProductCondition.createCheckout(token, createCheckout)
+            try {
+                val response = retrofitProductCondition.createCheckout(token, createCheckout)
+                if (response.isSuccessful) {
+                    // Обработка успешного ответа
+                } else {
+                    Log.e("BasketViewModel", "Error creating order: ${response.code()} ${response.message()}")
+                }
+            } catch (e: Exception) {
+                Log.e("BasketViewModel", "Error creating order", e)
+            }
         }
     }
-
 }
+
 

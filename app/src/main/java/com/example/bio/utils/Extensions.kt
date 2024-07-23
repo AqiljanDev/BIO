@@ -1,6 +1,10 @@
 package com.example.bio.utils
 
+import android.content.Context
 import android.graphics.Color
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import com.google.android.material.badge.BadgeDrawable
 
 fun BadgeDrawable.defaultCustom(
@@ -44,3 +48,12 @@ fun <T> MutableList<T>.toggleItems(items: List<T>) {
     }
 }
 
+fun Context.vibratePhone(duration: Long = 50) {
+    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        vibrator.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
+    } else {
+        // Deprecated in API 26
+        vibrator.vibrate(duration)
+    }
+}

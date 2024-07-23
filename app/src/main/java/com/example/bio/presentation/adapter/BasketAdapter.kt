@@ -14,6 +14,7 @@ import com.example.bio.databinding.BasketProductBinding
 import com.example.bio.domain.entities.cart.CartFullProduct
 import com.example.bio.domain.entities.findOne.Product
 import com.example.bio.domain.entities.userDiscount.UserDiscount
+import com.example.core.UrlConstants
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -71,7 +72,7 @@ class BasketAdapter(
 
             if (cart.product.gallery.isNotEmpty()) {
                 Glide.with(binding.root)
-                    .load("http://192.168.0.103:4040/img/products/${cart.product.gallery[0]}")
+                    .load( UrlConstants.IMG_PRODUCT_URL + cart.product.gallery[0])
                     .into(binding.imageViewPhoto)
             }
 

@@ -1,6 +1,8 @@
 package com.example.bio.presentation.category
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.bio.R
@@ -23,11 +26,12 @@ import com.example.bio.presentation.MainActivity
 import com.example.bio.presentation.adapter.CategoryAdapter
 import com.example.bio.presentation.base.BaseBottomFragment
 import com.example.bio.presentation.card.ProductCardFragment
-import com.example.bio.presentation.data.BottomNavigationAnimator
 import com.example.bio.presentation.data.Quad
 import com.example.bio.presentation.data.State
 import com.example.bio.presentation.filter.FilterFragment
+import com.example.bio.utils.vibratePhone
 import com.example.data.SharedPreferencesManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,21 +61,15 @@ class CategoryFragment : BaseBottomFragment() {
     private var listGroup: MutableList<String> = mutableListOf()
 
     private lateinit var adapter: CategoryAdapter
-    private lateinit var bottomNavigationAnimator: BottomNavigationAnimator
+
+    private val bottomNavigationView: BottomNavigationView? by lazy {
+            activity?.findViewById(R.id.bottom_navigation)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             request = it.getString("category") ?: "index"
-        }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is BottomNavigationAnimator) {
-            bottomNavigationAnimator = context
-        } else {
-            throw ClassCastException("$context must implement BottomNavigationAnimator")
         }
     }
 
@@ -150,6 +148,26 @@ class CategoryFragment : BaseBottomFragment() {
                 FilterFragment().apply { arguments = bundle }
             )
         }
+
+
+        (activity as MainActivity).onBackPressedDispatcher.addCallback(viewLifecycleOwner, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                Log.d("Mylog", "This is finish catalog")
+                AlertDialog.Builder(requireContext())
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(R.string.quit)
+                    .setMessage(R.string.really_quit_application)
+                    .setPositiveButton(
+                        R.string.yes,
+                        DialogInterface.OnClickListener { dialog, which ->
+                            (activity as MainActivity).finishAffinity()
+                        })
+                    .setNegativeButton(R.string.no, null)
+                    .show()
+            }
+
+        })
+
     }
 
     private fun setupAdapter() {
@@ -211,29 +229,38 @@ class CategoryFragment : BaseBottomFragment() {
     private fun updateBasket(prodId: String, count: Int) {
         viewModel.eventCart(token, PostCartDto(prodId, count))
         (activity as MainActivity).badgeBasket.isVisible = true
+
+        Log.d("Mylog", "update basket")
+        requireContext().vibratePhone()
     }
 
     private fun deleteBasket(id: Int) {
         try {
             Log.d("Mylog", "ID count = $id")
             viewModel.deleteCart(token, id)
+            (activity as MainActivity).badgeBasket.isVisible = false
         } catch (ex: Exception) {
             Log.d("Mylog", "Exception === ${ex.message}")
         }
-        (activity as MainActivity).badgeBasket.isVisible = false
+
     }
 
     private fun updateGroup(state: Boolean, id1c: String) {
         if (state) listGroup.add(id1c) else listGroup.remove(id1c)
 
         (activity as MainActivity).badgeGroup.isVisible = listGroup.isNotEmpty()
+        if (listGroup.isNotEmpty()) requireContext().vibratePhone()
+
         viewModel.eventCompare(token, id1c)
     }
 
     private fun updateFavorite(state: Boolean, id1c: String) {
         if (state) listFavorite.add(id1c) else listFavorite.remove(id1c)
         (activity as MainActivity).badgeFavorite.isVisible = listFavorite.isNotEmpty()
-        bottomNavigationAnimator.animateBottomMenuIcon(R.id.favorite)
+        if (listFavorite.isNotEmpty()) requireContext().vibratePhone()
+
+        Log.d("CategoryFragment", "Button clicked to start animation")
+
         viewModel.eventWishList(token, id1c)
     }
 

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.example.bio.R
 import com.example.bio.data.dto.CartMiniDto
 import com.example.bio.data.dto.PostCartDto
 import com.example.bio.data.dto.WishListFullDto
@@ -17,7 +18,9 @@ import com.example.bio.presentation.adapter.CategoryAdapter
 import com.example.bio.presentation.base.BaseBottomFragment
 import com.example.bio.presentation.card.ProductCardFragment
 import com.example.bio.presentation.data.Quad
+import com.example.bio.utils.vibratePhone
 import com.example.data.SharedPreferencesManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -39,6 +42,10 @@ class FavoriteFragment : BaseBottomFragment() {
     private val token: String by lazy { sharedPreferences.getString(SharedPreferencesManager.KEYS.TOKEN) }
 
     private var listGroup: MutableList<String> = mutableListOf()
+
+    private val bottomNavigationView: BottomNavigationView? by lazy {
+        activity?.findViewById(R.id.bottom_navigation)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -102,6 +109,8 @@ class FavoriteFragment : BaseBottomFragment() {
             PostCartDto(prodId, count)
         )
         (activity as MainActivity).badgeBasket.isVisible = true
+
+        requireContext().vibratePhone()
     }
 
     private fun deleteBasket(id: Int) {
@@ -117,6 +126,9 @@ class FavoriteFragment : BaseBottomFragment() {
     private fun updateGroup(state: Boolean, id1c: String) {
         if (state) listGroup.add(id1c) else listGroup.remove(id1c)
         (activity as MainActivity).badgeGroup.isVisible = listGroup.isNotEmpty()
+
+        if (listGroup.isNotEmpty()) requireContext().vibratePhone()
+
         viewModel.eventCompare(token, id1c)
     }
 

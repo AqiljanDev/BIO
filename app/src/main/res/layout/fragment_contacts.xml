@@ -26,8 +26,9 @@
         android:drawablePadding="10dp"
         android:text="Phone: +7 777 777 7777"
         android:textColor="@color/black"
+        android:gravity="center_vertical"
         android:textSize="17sp"
-        app:drawableStartCompat="@drawable/ic_phone" />
+        app:drawableStartCompat="@mipmap/ic_phone" />
 
     <TextView
         android:layout_width="match_parent"
@@ -35,9 +36,10 @@
         android:layout_marginTop="8dp"
         android:fontFamily="@font/roboto_condensed_regular"
         android:drawablePadding="10dp"
+        android:gravity="center_vertical"
         android:text="Email: test@netlight.com"
         android:textSize="17sp"
-        app:drawableStartCompat="@drawable/ic_email" />
+        app:drawableStartCompat="@mipmap/ic_email" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -45,8 +47,9 @@
         android:fontFamily="@font/roboto_condensed_regular"
         android:layout_marginTop="8dp"
         android:drawablePadding="10dp"
+        android:gravity="center_vertical"
         android:text="Адрес: Алматы.район.здание"
         android:textSize="17sp"
-        app:drawableStartCompat="@drawable/ic_location" />
+        app:drawableStartCompat="@mipmap/ic_location" />
 
 </LinearLayout>

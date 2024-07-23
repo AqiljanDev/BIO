@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -54,9 +55,19 @@ class RegisterFragment : Fragment() {
                     textInputEditAccountNumber.text.toString()
                 )
 
-                viewModel.register(registerData)
+//                viewModel.register(registerData)
+                findNavController().navigate(R.id.action_registerFragment_to_statusPendingFragment)
             }
         }
+
+
+        val spinnerAdapter = ArrayAdapter(
+            requireContext(),
+            R.layout.spinner_item,
+            resources.getStringArray(R.array.company_type)
+        )
+        binding.spinnerTypeCompany.adapter = spinnerAdapter
+
 
         viewModel.stateRegister.onEach {
 
@@ -75,6 +86,7 @@ class RegisterFragment : Fragment() {
                 is StateSealedClass.Failed -> {
 
                     binding.tvIncorrectFormat.visibility = View.VISIBLE
+                    binding.tvIncorrectFormat.text = it.message
                 }
             }
 

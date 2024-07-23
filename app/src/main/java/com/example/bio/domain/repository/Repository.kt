@@ -1,5 +1,6 @@
 package com.example.bio.domain.repository
 
+import com.example.bio.domain.entities.Cabinet
 import com.example.bio.domain.entities.CategoriesFindAll
 import com.example.bio.domain.entities.collectCharacters.CollectCharacter
 import com.example.bio.domain.entities.findOne.Catalog
@@ -36,4 +37,8 @@ interface Repository {
     suspend fun getOrdersFindMy(token: String): List<MyOrder>
 
     suspend fun getOrdersFindOne(token: String, id: Int): FindOneOrder
+
+    suspend fun getCabinetFindMy(token: String): Cabinet
+
+    suspend fun putCabinetUpdate(token: String, cabinet: Cabinet): Cabinet
 }

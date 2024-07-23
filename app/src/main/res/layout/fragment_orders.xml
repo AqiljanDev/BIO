@@ -28,6 +28,18 @@
             android:background="@color/chip_background_line" />
 
         <TextView
+            android:id="@+id/tv_not_orders"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Нет заказов"
+            android:textSize="19sp"
+            android:visibility="gone"
+            android:fontFamily="@font/roboto_condensed_medium"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/tv_my_discount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
@@ -48,6 +60,7 @@
             app:singleSelection="false" />
 
         <TextView
+            android:id="@+id/tv_history"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"

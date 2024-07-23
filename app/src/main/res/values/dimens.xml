@@ -4,4 +4,5 @@
     <dimen name="fourteen_sp">14sp</dimen>
     <dimen name="viewpager_item_padding">15dp</dimen>
     <dimen name="margin_radio_button">10dp</dimen>
+    <dimen name="bottom_sheet_peek_height">480dp</dimen>
 </resources>

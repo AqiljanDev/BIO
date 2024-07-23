@@ -10,8 +10,10 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.example.bio.R
 import com.example.bio.data.dto.CartMiniDto
 import com.example.bio.data.dto.PostCartDto
 import com.example.bio.databinding.FragmentSearchBinding
@@ -22,8 +24,10 @@ import com.example.bio.presentation.adapter.SearchHistoryAdapter
 import com.example.bio.presentation.card.ProductCardFragment
 import com.example.bio.presentation.category.CategoryFragment
 import com.example.bio.presentation.data.Quad
+import com.example.bio.utils.vibratePhone
 import com.example.data.SearchHistoryManager
 import com.example.data.SharedPreferencesManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -32,7 +36,7 @@ import kotlinx.coroutines.flow.onEach
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
 
-    private val viewModel: SearchViewModel by viewModels()
+    private val viewModel: SearchViewModel by activityViewModels()
     private val binding: FragmentSearchBinding by lazy {
         FragmentSearchBinding.inflate(layoutInflater)
     }
@@ -48,6 +52,10 @@ class SearchFragment : Fragment() {
 
     private var listFavorite: MutableList<String> = mutableListOf()
     private var listGroup: MutableList<String> = mutableListOf()
+
+    private val bottomNavigationView: BottomNavigationView? by lazy {
+        activity?.findViewById(R.id.bottom_navigation)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -79,6 +87,8 @@ class SearchFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
                     performSearch(query)
+                    binding.rcHistory.visibility = View.GONE
+                    binding.llHistory.visibility = View.GONE
                 }
                 val inputMethodManager = activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
@@ -88,9 +98,13 @@ class SearchFragment : Fragment() {
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText.isNullOrEmpty()) {
                     updateHistory()
+                    binding.rcHistory.visibility = View.VISIBLE
+                    binding.llHistory.visibility = View.VISIBLE
                 } else {
                     viewModel.getSearchResults(token, newText)
                     updateHistory()
+                    binding.rcHistory.visibility = View.GONE
+                    binding.llHistory.visibility = View.GONE
                 }
                 return true
             }
@@ -151,6 +165,8 @@ class SearchFragment : Fragment() {
     private fun updateBasket(prodId: String, count: Int) {
         viewModel.eventCart(token, PostCartDto(prodId, count))
         (activity as MainActivity).badgeBasket.isVisible = true
+
+        requireContext().vibratePhone()
     }
 
     private fun deleteBasket(id: Int) {
@@ -166,12 +182,18 @@ class SearchFragment : Fragment() {
     private fun updateGroup(state: Boolean, id1c: String) {
         if (state) listGroup.add(id1c) else listGroup.remove(id1c)
         (activity as MainActivity).badgeGroup.isVisible = listGroup.isNotEmpty()
+
+        if (listGroup.isNotEmpty()) requireContext().vibratePhone()
+
         viewModel.eventCompare(token, id1c)
     }
 
     private fun updateFavorite(state: Boolean, id1c: String) {
         if (state) listFavorite.add(id1c) else listFavorite.remove(id1c)
         (activity as MainActivity).badgeFavorite.isVisible = listFavorite.isNotEmpty()
+
+        if (listFavorite.isNotEmpty()) requireContext().vibratePhone()
+
         viewModel.eventWishList(token, id1c)
     }
 
@@ -189,8 +211,6 @@ class SearchFragment : Fragment() {
             performSearch(query)
         }
         binding.rcHistory.adapter = adapterSearchHistory
-        binding.rcHistory.visibility = if (history.isEmpty()) View.GONE else View.VISIBLE
-        binding.llHistory.visibility = if (history.isEmpty()) View.GONE else View.VISIBLE
     }
 
     override fun onDestroyView() {

@@ -1,5 +1,6 @@
 package com.example.bio.data.repository
 
+import com.example.bio.domain.entities.Cabinet
 import com.example.bio.domain.entities.CategoriesFindAll
 import com.example.bio.domain.entities.collectCharacters.CollectCharacter
 import com.example.bio.domain.entities.findOne.Catalog
@@ -65,6 +66,14 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun getOrdersFindOne(token: String, id: Int): FindOneOrder {
         return profileDataSource.getOrdersFinOne(token, id)
+    }
+
+    override suspend fun getCabinetFindMy(token: String): Cabinet {
+        return profileDataSource.getCabinetFindMy(token)
+    }
+
+    override suspend fun putCabinetUpdate(token: String, cabinet: Cabinet): Cabinet {
+        return profileDataSource.putCabinetUpdate(token, cabinet)
     }
 
 }

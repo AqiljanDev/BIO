@@ -9,37 +9,15 @@ import com.example.login.data.dataClass.PasswordCodeCheckData
 import com.example.login.data.dataClass.PasswordCodeSendData
 import com.example.login.data.dataClass.RegisterData
 import com.example.login.data.dataClass.returnData.AuthReturnClass
+import retrofit2.Response
 
 class Repository {
-    suspend fun login(loginData: LoginData): AuthReturnClass {
-        try {
+    suspend fun login(loginData: LoginData): Response<AuthReturnClass> {
             return retrofitAuth.login(loginData)
-        } catch (ex: Exception) {
-            throw Exception("Exception = ${ex.message}")
-        }
-
     }
 
-    suspend fun registration(registerData: RegisterData): AuthReturnClass {
+    suspend fun registration(registerData: RegisterData): Response<String> {
 
-            val retro = retrofitAuth.registration(registerData)
-            Log.d(
-                "MyLog", "Message filed = ${retro.message}, Error = ${retro.error}, " +
-                        "StatusCode = ${retro.statusCode}, Token = ${retro.accessToken}"
-            )
-
-            return retro
-    }
-
-    suspend fun passwordCodeSend(passwordCodeSendData: PasswordCodeSendData): Boolean {
-        return retrofitPassRestore.passwordCodeSend(passwordCodeSendData)
-    }
-
-    suspend fun passwordCodeCheck(passwordCodeCheckData: PasswordCodeCheckData): Boolean {
-        return retrofitPassRestore.passwordCodeCheck(passwordCodeCheckData)
-    }
-
-    suspend fun passwordChange(passwordChangeData: PasswordChangeData): Boolean {
-        return retrofitPassRestore.passwordChange(passwordChangeData)
+        return retrofitAuth.registration(registerData)
     }
 }

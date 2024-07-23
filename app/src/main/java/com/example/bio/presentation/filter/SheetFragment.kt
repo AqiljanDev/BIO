@@ -6,13 +6,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.bio.R
 import com.example.bio.databinding.FragmentSheetBinding
 import com.example.bio.domain.entities.collectCharacters.Character
 import com.example.bio.presentation.adapter.FilterCharactersAdapter
+import com.example.bio.utils.toggleItem
 import com.example.bio.utils.toggleItemBasedOnList
 import com.example.bio.utils.toggleItems
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
+@Suppress("DEPRECATION")
 class SheetFragment : BottomSheetDialogFragment() {
 
     private val binding: FragmentSheetBinding by lazy {
@@ -43,12 +47,12 @@ class SheetFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var listCharactersCurrent: List<Character> = listOf()
         val listCharacterId: MutableList<String> = mutableListOf()
         val listActive = listener?.getId1cActiveList() ?: listOf()
-
         val adapter = FilterCharactersAdapter(mutableListOf()) {
             Log.d("Mylog", "CharId = $it")
-            listCharacterId.toggleItemBasedOnList(it, listActive)
+            listCharacterId.toggleItem(it)
         }
         binding.rcCharacters.adapter = adapter
 
@@ -56,9 +60,14 @@ class SheetFragment : BottomSheetDialogFragment() {
             dismiss()
         }
 
+        val bottomSheetBehavior = BottomSheetBehavior.from(view.parent as View)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
         binding.btnReset.setOnClickListener {
-            adapter.updateList(listOf(), emptyList())
-            listCharacterId.toggleItems(listActive)
+            adapter.resetAllCheckboxes() // Сброс к начальному состоянию
+            listCharacterId.clear() // Очистите активные ID
+            listCharacterId.addAll(listActive) // Верните в активные ID только те, которые были активны
+            Log.d("Mylog", "Reset: listActive = ${listActive.size}, listCharId = ${listCharacterId.size}")
         }
 
         binding.btnEnter.setOnClickListener {
@@ -70,6 +79,7 @@ class SheetFragment : BottomSheetDialogFragment() {
         val list = listener?.onCharactersList()
         list?.let { character ->
             adapter.updateList(character, listActive)
+            listCharactersCurrent = character
         }
         binding.tvTitle.text = listener?.getTitleBrand()
     }
@@ -79,4 +89,5 @@ class SheetFragment : BottomSheetDialogFragment() {
         fun newInstance() = SheetFragment()
     }
 }
+
 
